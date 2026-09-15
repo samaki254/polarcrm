@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<!-- saved from url=(0068)blob:https://www.kimi.ai/8d333f6a-dc79-4613-b60d-669808ec41be#/users -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polar HR CRM</title>
+<style>
+:root{
+  --navy:#0B2545; --navy2:#123A63; --accent:#1565D8; --accent-d:#0E4CA6;
+  --bg:#F4F6F9; --card:#FFFFFF; --border:#E3E9F1; --text:#1C2534; --muted:#66748A;
+  --green:#15803D; --green-bg:#E7F6EC; --red:#DC2626; --red-bg:#FDECEC;
+  --amber:#B45309; --amber-bg:#FEF3C7; --blue:#1D4ED8; --blue-bg:#DBEAFE;
+  --radius:10px; --shadow:0 1px 3px rgba(16,24,40,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.45}
+.hidden{display:none!important}
+a{color:var(--accent);text-decoration:none;cursor:pointer}
+svg{width:18px;height:18px;flex:none}
+
+/* ---------- LOGIN ---------- */
+#loginScreen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+.login-card{background:#fff;border-radius:14px;width:100%;max-width:400px;padding:36px 32px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.logo-mark{width:38px;height:38px;border-radius:9px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px}
+.login-logo b{font-size:19px;color:var(--navy);letter-spacing:.3px}
+.login-sub{color:var(--muted);font-size:13px;margin-bottom:22px}
+.login-hint{background:#F0F5FC;border:1px solid #D8E4F5;border-radius:8px;padding:10px 12px;font-size:12px;color:#3B4A63;margin-top:16px;line-height:1.7}
+.login-hint b{color:var(--navy)}
+.login-err{background:var(--red-bg);color:var(--red);border-radius:8px;padding:8px 12px;font-size:13px;margin-bottom:12px}
+
+/* ---------- APP LAYOUT ---------- */
+#app{display:flex;min-height:100vh}
+#sidebar{width:238px;background:var(--navy);color:#B9C9DD;flex:none;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:30}
+.sb-logo{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-logo b{color:#fff;font-size:16px;letter-spacing:.4px}
+.sb-logo small{display:block;font-size:10px;color:#7E94B3;letter-spacing:1.5px;text-transform:uppercase}
+#sbNav{flex:1;overflow-y:auto;padding:12px 10px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:8px;color:#B9C9DD;cursor:pointer;font-size:13.5px;margin-bottom:2px;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.10);color:#fff;border-left-color:#4DA3FF}
+.sb-user{padding:14px 16px;border-top:1px solid rgba(255,255,255,.08);font-size:12.5px}
+.sb-user b{color:#fff;display:block;font-size:13px}
+.sb-user span{color:#7E94B3;text-transform:capitalize}
+.main-wrap{flex:1;min-width:0;display:flex;flex-direction:column}
+#topbar{height:60px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 20px;position:sticky;top:0;z-index:20}
+#hamburger{display:none;background:none;border:1px solid var(--border);border-radius:8px;padding:7px 9px;cursor:pointer;color:var(--text)}
+.search-wrap{flex:1;max-width:560px;position:relative;display:flex}
+.search-wrap input{flex:1;border:1px solid var(--border);border-right:none;border-radius:8px 0 0 8px;padding:9px 12px;font-size:13.5px;outline:none}
+.search-wrap input:focus{border-color:var(--accent)}
+.search-wrap button{border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:0 8px 8px 0;padding:0 16px;cursor:pointer;font-size:13px}
+.top-user{margin-left:auto;display:flex;align-items:center;gap:10px}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--navy2);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.top-user .who b{display:block;font-size:13px;line-height:1.2}
+.top-user .who span{font-size:11px;color:var(--muted);text-transform:capitalize}
+.icon-btn{background:none;border:1px solid var(--border);border-radius:8px;padding:7px 9px;cursor:pointer;color:var(--muted)}
+.icon-btn:hover{color:var(--red);border-color:var(--red)}
+#page{flex:1;padding:22px 24px 60px;max-width:1340px;width:100%;margin:0 auto}
+
+/* ---------- COMPONENTS ---------- */
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.page-head h1{font-size:21px;color:var(--navy)}
+.page-head p{color:var(--muted);font-size:13px;margin-top:2px}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:18px}
+.card-h{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-h h3{font-size:14.5px;color:var(--navy)}
+.card-h .sub{font-size:12px;color:var(--muted);font-weight:400}
+.card-b{padding:16px 18px}
+.grid-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:13px;margin-bottom:18px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+.stat .num{font-size:25px;font-weight:700;color:var(--navy);line-height:1.15}
+.stat .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-top:3px}
+.stat .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.two-col{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;align-items:start}
+@media(max-width:1024px){.two-col{grid-template-columns:1fr}}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid transparent;border-radius:8px;padding:9px 15px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-d)}
+.btn-ghost{background:#fff;border-color:var(--border);color:var(--text)}
+.btn-ghost:hover{border-color:#B9C6D8;background:#F8FAFD}
+.btn-green{background:var(--green);color:#fff}
+.btn-red{background:var(--red);color:#fff}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:7px}
+.btn-xs{padding:3px 8px;font-size:11.5px;border-radius:6px;font-weight:600}
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);background:#F8FAFD;padding:9px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+.tbl td{padding:10px 12px;border-bottom:1px solid #EEF2F7;vertical-align:middle}
+.tbl tbody tr:hover{background:#F8FAFD}
+.tbl tbody tr.clickable{cursor:pointer}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+.b-VIP{background:var(--amber-bg);color:var(--amber)}
+.b-SILVER{background:#F1F5F9;color:#475569}
+.b-BRONZE{background:#FFEDD5;color:#9A3412}
+.b-PENDING{background:var(--blue-bg);color:var(--blue)}
+.b-green{background:var(--green-bg);color:var(--green)}
+.b-red{background:var(--red-bg);color:var(--red)}
+.b-gray{background:#F1F5F9;color:#64748B}
+.b-blue{background:var(--blue-bg);color:var(--blue)}
+.b-amber{background:var(--amber-bg);color:var(--amber)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tab{padding:9px 15px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit}
+.tab:hover{color:var(--navy)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab .cnt{background:#E8EEF6;color:var(--navy);border-radius:12px;padding:1px 7px;font-size:11px;margin-left:5px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px}
+.form-grid .full{grid-column:1/-1}
+@media(max-width:640px){.form-grid{grid-template-columns:1fr}}
+label.fl{display:block;font-size:12px;font-weight:600;color:#3D4A5F;margin-bottom:5px}
+input.fi,select.fi,textarea.fi{width:100%;border:1px solid #D4DCE6;border-radius:8px;padding:9px 11px;font-size:13.5px;font-family:inherit;outline:none;background:#fff;color:var(--text)}
+input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(21,101,216,.12)}
+textarea.fi{resize:vertical;min-height:64px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#F1F5F9;border-radius:16px;padding:3px 11px;font-size:12px;color:#475569}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px}
+.filters .fg{min-width:150px;flex:1;max-width:220px}
+.filters .fg.grow{max-width:280px}
+.quick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}
+.qa{background:#fff;border:1px solid var(--border);border-radius:10px;padding:15px 14px;cursor:pointer;text-align:center;font-weight:600;font-size:13px;color:var(--navy);box-shadow:var(--shadow)}
+.qa:hover{border-color:var(--accent);color:var(--accent)}
+.qa .ic{width:36px;height:36px;border-radius:9px;background:#EAF1FB;color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+.timeline{position:relative;padding-left:22px}
+.timeline:before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:#E3E9F1}
+.tl-item{position:relative;padding-bottom:16px}
+.tl-item:before{content:"";position:absolute;left:-21px;top:5px;width:10px;height:10px;border-radius:50%;background:#fff;border:2.5px solid var(--accent)}
+.tl-item .tl-date{font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.tl-item .tl-title{font-weight:700;font-size:13.5px;margin:1px 0}
+.tl-item .tl-body{font-size:13px;color:#3D4A5F}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px 18px}
+.info-grid .ii b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:2px}
+.info-grid .ii span{font-size:13.5px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:12.5px}
+.bar-row .bl{width:130px;flex:none;color:#3D4A5F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-row .track{flex:1;height:9px;background:#EEF2F7;border-radius:6px;overflow:hidden}
+.bar-row .fill{height:100%;background:var(--accent);border-radius:6px}
+.bar-row .bv{width:34px;text-align:right;font-weight:700;color:var(--navy)}
+.empty{padding:34px 16px;text-align:center;color:var(--muted);font-size:13.5px}
+.empty b{display:block;font-size:15px;color:var(--navy);margin-bottom:4px}
+
+/* ---------- MODAL & TOAST ---------- */
+#modalOverlay{position:fixed;inset:0;background:rgba(10,20,35,.52);display:flex;align-items:flex-start;justify-content:center;padding:30px 14px;z-index:100;overflow-y:auto}
+#modal{background:#fff;border-radius:12px;width:100%;max-width:640px;box-shadow:0 24px 70px rgba(0,0,0,.35);animation:none}
+#modal.wide{max-width:760px}
+.m-h{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.m-h h3{font-size:16px;color:var(--navy)}
+.m-b{padding:18px 20px;max-height:66vh;overflow-y:auto}
+.m-f{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+#toast{position:fixed;bottom:22px;right:22px;z-index:200;display:flex;flex-direction:column;gap:8px}
+.toast{background:#1C2534;color:#fff;padding:11px 16px;border-radius:9px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:340px}
+.toast.ok{background:var(--green)}
+.toast.err{background:var(--red)}
+
+/* ---------- RESPONSIVE ---------- */
+#sbOverlay{display:none}
+@media(max-width:940px){
+  #sidebar{position:fixed;left:0;top:0;transform:translateX(-105%);transition:transform .22s ease}
+  #sidebar.open{transform:translateX(0)}
+  #hamburger{display:block}
+  #sbOverlay.show{display:block;position:fixed;inset:0;background:rgba(10,20,35,.45);z-index:25}
+  #page{padding:16px 14px 60px}
+  .search-wrap{max-width:none}
+  .top-user .who{display:none}
+}
+</style>
+<!--<base target="_blank">--><base href="." target="_blank">
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="hidden">
+  <div class="login-card">
+    <div class="login-logo"><div class="logo-mark">P</div><b>POLAR HR</b></div>
+    <div class="login-sub">Consultancy CRM — Staff Portal</div>
+    <div id="loginErr" class="login-err hidden"></div>
+    <form onsubmit="return doLogin(event)">
+      <div style="margin-bottom:12px"><label class="fl">Email / Username</label><input class="fi" id="liEmail" type="email" required="" placeholder="you@polarhr.co.ke"></div>
+      <div style="margin-bottom:16px"><label class="fl">Password</label><input class="fi" id="liPass" type="password" required="" placeholder="••••••••"></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center">Sign In</button>
+    </form>
+    <div class="login-hint">
+      <b>Demo accounts</b> (password: <b>polar123</b>)<br>
+      Admin: admin@polarhr.co.ke<br>
+      Management: peter@polarhr.co.ke<br>
+      Staff: jane@polarhr.co.ke · david@polarhr.co.ke
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="">
+  <div id="sbOverlay" onclick="toggleSb(false)" class=""></div>
+  <aside id="sidebar" class="">
+    <div class="sb-logo"><div class="logo-mark">P</div><div><b>POLAR HR</b><small>Consultancy CRM</small></div></div>
+    <nav id="sbNav"><div class="nav-item" id="nav-#/dashboard" onclick="go(&#39;#/dashboard&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg><span>Dashboard</span></div><div class="nav-item" id="nav-#/companies" onclick="go(&#39;#/companies&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"></path><path d="M9 21v-4h6v4"></path></svg><span>Companies</span></div><div class="nav-item" id="nav-#/contacts" onclick="go(&#39;#/contacts&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg><span>Contacts</span></div><div class="nav-item" id="nav-#/leads" onclick="go(&#39;#/leads&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1"></circle></svg><span>Leads &amp; Marketing</span></div><div class="nav-item" id="nav-#/followups" onclick="go(&#39;#/followups&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg><span>Follow-Ups</span></div><div class="nav-item" id="nav-#/interactions" onclick="go(&#39;#/interactions&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg><span>Interactions</span></div><div class="nav-item" id="nav-#/activity" onclick="go(&#39;#/activity&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg><span>Staff Activity</span></div><div class="nav-item" id="nav-#/reports" onclick="go(&#39;#/reports&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg><span>Reports</span></div><div class="nav-item active" id="nav-#/users" onclick="go(&#39;#/users&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span>Users</span></div><div class="nav-item" id="nav-#/settings" onclick="go(&#39;#/settings&#39;)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg><span>Settings</span></div></nav>
+    <div class="sb-user"><b id="sbUserName">Amina Otieno</b><span id="sbUserRole">admin</span></div>
+  </aside>
+  <div class="main-wrap">
+    <header id="topbar">
+      <button id="hamburger" onclick="toggleSb()">☰</button>
+      <div class="search-wrap">
+        <input id="globalSearch" placeholder="Search: name, job title (try “Waiter”), company, industry, location, phone, tag…" onkeydown="if(event.key===&#39;Enter&#39;)doGlobalSearch()">
+        <button onclick="doGlobalSearch()">Search</button>
+      </div>
+      <div class="top-user">
+        <div class="avatar" id="tbAvatar">AO</div>
+        <div class="who"><b id="tbName">Amina Otieno</b><span id="tbRole">admin</span></div>
+        <button class="icon-btn" title="Log out" onclick="doLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg></button>
+      </div>
+    </header>
+    <main id="page"><div class="page-head"><div><h1>Users</h1><p>Staff accounts and roles</p></div><div class="head-actions"><button class="btn btn-primary" onclick="openUserModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"></path></svg> Add User</button></div></div><div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody><tr><td><b>Samantha akinyi</b></td><td>admin@polarhr.co.ke</td><td style="text-transform:capitalize"><span class="badge b-amber">Admin</span></td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-xs" onclick="openUserModal(&#39;u_admin&#39;)">Edit</button> <button class="btn btn-ghost btn-xs" onclick="toggleUser(&#39;u_admin&#39;)">Deactivate</button></td></tr><tr><td><b>Marianna Juliana</b></td><td>marianna@polarhr.co.ke</td><td style="text-transform:capitalize"><span class="badge b-gray">Staff</span></td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-xs" onclick="openUserModal(&#39;u_peter&#39;)">Edit</button> <button class="btn btn-ghost btn-xs" onclick="toggleUser(&#39;u_peter&#39;)">Deactivate</button></td></tr><tr><td><b>Jane Wanjiru</b></td><td>jane@polarhr.co.ke</td><td style="text-transform:capitalize"><span class="badge b-gray">Staff</span></td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-xs" onclick="openUserModal(&#39;u_jane&#39;)">Edit</button> <button class="btn btn-ghost btn-xs" onclick="toggleUser(&#39;u_jane&#39;)">Deactivate</button></td></tr><tr><td><b>David Mwangi</b></td><td>david@polarhr.co.ke</td><td style="text-transform:capitalize"><span class="badge b-gray">Staff</span></td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-xs" onclick="openUserModal(&#39;u_david&#39;)">Edit</button> <button class="btn btn-ghost btn-xs" onclick="toggleUser(&#39;u_david&#39;)">Deactivate</button></td></tr></tbody></table></div></div></main>
+  </div>
+</div>
+
+<div id="modalOverlay" class="hidden" onclick="if(event.target===this)closeModal()"><div id="modal" class=""></div></div>
+
+<script>
+/* ============================================================
+   POLAR HR CRM — MVP  (client-side, localStorage database)
+   ============================================================ */
+
+/* ---------- ICONS ---------- */
+const IC = {
+  dash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
+  bldg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-4h6v4"/></svg>',
+  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>',
+  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+  chat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  pulse:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+  chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>',
+  cog:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>'
+};
+
+/* ---------- CONSTANTS ---------- */
+const SERVICES=["Recruitment","Executive Search","Manpower Outsourcing","HR Audits","Job Evaluation","Salary Surveys","HR Policies","Payroll Services","Restructuring","Leadership Training","HR Training","Customer Service Training","Labour Laws Training","Communication Skills Training","Team Building","Mentorship","Mental Health Training","Finance Training","Six Sigma Training","Train-the-Trainer","AI for Professionals","Other"];
+const LEAD_SOURCES=["Cold Call","WhatsApp","Email","LinkedIn","Facebook","Instagram","TikTok","Website","Referral","Networking","Training/Event","Walk-in","Existing Client","Other"];
+const CHANNELS=["Phone Call","WhatsApp","Email","LinkedIn","Facebook","Instagram","TikTok","Website","Referral","Networking/Event","Walk-in","Other"];
+const LEAD_STATUSES=["New","Contacted","Interested","Follow-Up Required","Proposal Sent","Negotiation","Converted","No Response","Not Interested","Lost"];
+const INTERACTION_TYPES=["Phone Call","WhatsApp","Email","Meeting","Site Visit","SMS","LinkedIn","Networking Event","Proposal","Training","Other"];
+const INDUSTRIES=["Hospitality","Manufacturing","Shipping & Logistics","Construction","Banking","Microfinance","Private Hospital","NGO","Education","Security","Retail","Real Estate","Professional Services","Other"];
+const CATEGORIES=["VIP","SILVER","BRONZE","PENDING"];
+const REL_STATUS=["Cold","Warm","Hot","Active Client","Dormant"];
+const PREF_METHODS=["Phone","WhatsApp","Email","SMS","In Person"];
+const CONTACT_TYPES=["Primary","Influencer","Decision Maker","Gatekeeper","Other"];
+const FU_METHODS=["Phone Call","WhatsApp","Email","Meeting","Site Visit","SMS","LinkedIn"];
+const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+/* Job-title synonym expansion — powers the “WAITERS” style search */
+const JOB_EXPAND = {
+  "waiter":["waiter","waitress","wait staff","restaurant server","server","banquet server"],
+  "waitress":["waiter","waitress","wait staff","restaurant server","server"],
+  "chef":["chef","cook","sous chef","head chef","executive chef","commis"],
+  "cook":["chef","cook","sous chef","head chef"],
+  "hr":["hr manager","human resources","hr officer","people & culture","talent manager","hr"],
+  "nurse":["nurse","registered nurse","clinical officer","enrolled nurse","rn"],
+  "doctor":["doctor","physician","medical officer","gp","surgeon","clinical"],
+  "accountant":["accountant","accounting","finance officer","finance manager","bookkeeper","bursar"],
+  "hotel manager":["hotel manager","general manager","lodging manager","resort manager","rooms division"],
+  "procurement":["procurement","purchasing","buyer","supply chain","sourcing"],
+  "ceo":["ceo","chief executive","managing director","executive director","md"],
+  "security":["security","guard","security officer","supervisor security"],
+  "engineer":["engineer","engineering","technician","site agent","foreman"],
+  "manager":["manager","supervisor","head of","team lead"]
+};
+
+/* ---------- HELPERS ---------- */
+function esc(s){ if(s===null||s===undefined) return ""; return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function dstr(d){ d=d||new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function addDays(n){ return new Date(Date.now()+n*86400000); }
+function today(){ return dstr(); }
+function nowHM(){ const d=new Date(); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+function nowHMS(){ return nowHM()+":"+String(new Date().getSeconds()).padStart(2,"0"); }
+function fmtDate(s){ if(!s) return "—"; const p=String(s).split("-"); if(p.length<3) return s; return parseInt(p[2])+" "+MONTHS[parseInt(p[1])-1]+" "+p[0]; }
+function fmtDT(s){ return s? fmtDate(s.slice(0,10))+" "+s.slice(11,16) : "—"; }
+function timeGreet(){ const h=new Date().getHours(); return h<12?"Good Morning":h<17?"Good Afternoon":"Good Evening"; }
+function toast(msg,kind){ const t=document.createElement("div"); t.className="toast "+(kind||""); t.innerHTML=msg; document.getElementById("toast").appendChild(t); setTimeout(()=>t.remove(),3400); }
+
+/* ---------- DATABASE ---------- */
+const DBKEY="polarhr_crm_v1";
+let db=null;
+function loadDB(){ try{ db=JSON.parse(localStorage.getItem(DBKEY)); }catch(e){ db=null; } if(!db||!db.users){ db=seedDB(); saveDB(); } }
+function saveDB(){ localStorage.setItem(DBKEY,JSON.stringify(db)); }
+function uid(p){ return p+"_"+(++db.seq); }
+
+/* ---------- SEED DATA ---------- */
+function seedDB(){
+  const T=today(), Y=dstr(addDays(-1)), Y2=dstr(addDays(-2)), TOM=dstr(addDays(1)), T2=dstr(addDays(2)), T3=dstr(addDays(3)), LW=dstr(addDays(-7));
+  const users=[
+    {id:"u_admin",name:"Amina Otieno",email:"admin@polarhr.co.ke",pass:"polar123",role:"admin",active:true},
+    {id:"u_peter",name:"Peter Kamau",email:"peter@polarhr.co.ke",pass:"polar123",role:"management",active:true},
+    {id:"u_jane",name:"Jane Wanjiru",email:"jane@polarhr.co.ke",pass:"polar123",role:"staff",active:true},
+    {id:"u_david",name:"David Mwangi",email:"david@polarhr.co.ke",pass:"polar123",role:"staff",active:true}
+  ];
+  const Co=(id,name,industry,location,category,phone,email,extra)=>Object.assign({id,name,industry,location,address:"",website:"",phone,email,category,status:"Active",assignedTo:"u_jane",dateAdded:LW,lastInteraction:"",leadSource:"Referral",servicesInterested:[],servicesProvided:[],notes:"",tags:[],createdBy:"u_jane"},extra||{});
+  const companies=[
+    Co("co1","Sarova Whitesands Beach Resort","Hospitality","Mombasa","VIP","+254 711 090 000","info@sarovahotels.com",{address:"Malindi Road, Bamburi, Mombasa",website:"www.sarovahotels.com",leadSource:"Networking",servicesInterested:["Recruitment","Customer Service Training","Team Building"],servicesProvided:["Recruitment"],assignedTo:"u_jane",notes:"Flagship hospitality client. Annual recruitment cycle.",tags:["hotel","beach-resort"]}),
+    Co("co2","PrideInn Paradise Hotel","Hospitality","Mombasa","SILVER","+254 709 433 000","reservations@prideinn.co.ke",{address:"Shanzu Beach Road, Mombasa",leadSource:"Referral",servicesInterested:["Manpower Outsourcing","HR Training"],assignedTo:"u_david",notes:"Expanding F&B team.",tags:["hotel"]}),
+    Co("co3","Java House Africa","Hospitality","Nairobi","BRONZE","+254 709 728 200","info@javahouseafrica.com",{address:"ABC Place, Waiyaki Way, Nairobi",leadSource:"Cold Call",servicesInterested:["Customer Service Training"],assignedTo:"u_jane"}),
+    Co("co4","Coast Cereals Ltd","Manufacturing","Mombasa","SILVER","+254 722 415 889","info@coastcereals.co.ke",{address:"Mikindani Industrial Area, Mombasa",leadSource:"Website",servicesInterested:["Payroll Services","Labour Laws Training"],servicesProvided:["Payroll Services"],assignedTo:"u_david"}),
+    Co("co5","SwiftCargo Logistics","Shipping & Logistics","Nairobi","VIP","+254 730 606 000","hr@swiftcargo.co.ke",{address:"Enterprise Road, Industrial Area, Nairobi",leadSource:"Networking",servicesInterested:["Executive Search","HR Audits","Leadership Training"],assignedTo:"u_admin",notes:"Strategic account — national logistics provider.",tags:["logistics"]}),
+    Co("co6","BuildMart Construction","Construction","Nairobi","PENDING","+254 700 118 230","info@buildmart.co.ke",{address:"Mombasa Road, Nairobi",leadSource:"LinkedIn",servicesInterested:["HR Policies","Job Evaluation"],assignedTo:"u_jane",tags:["prospect"]}),
+    Co("co7","Equatorial Microfinance Bank","Microfinance","Kisumu","SILVER","+254 780 444 900","info@equatorialbank.co.ke",{address:"Oginga Odinga Street, Kisumu",leadSource:"Training/Event",servicesInterested:["HR Training","Finance Training"],servicesProvided:["Finance Training"],assignedTo:"u_david"}),
+    Co("co8","Coast General Hospital","Private Hospital","Mombasa","VIP","+254 716 666 333","admin@coastgeneral.or.ke",{address:"Kizingo, Mombasa",leadSource:"Referral",servicesInterested:["Recruitment","Mental Health Training"],servicesProvided:["Recruitment"],assignedTo:"u_admin",notes:"High-volume nursing recruitment.",tags:["hospital"]}),
+    Co("co9","HopeBridge Foundation","NGO","Nairobi","BRONZE","+254 20 388 9000","info@hopebridge.org",{address:"Ngong Road, Nairobi",leadSource:"Website",servicesInterested:["HR Policies"],assignedTo:"u_jane"}),
+    Co("co10","Sunrise Academy","Education","Nakuru","PENDING","+254 722 908 771","office@sunriseacademy.sc.ke",{address:"Kenyatta Avenue, Nakuru",leadSource:"Facebook",servicesInterested:["Recruitment","HR Policies"],assignedTo:"u_david"}),
+    Co("co11","SecureShield Services","Security","Nairobi","BRONZE","+254 709 572 000","ops@secureshield.co.ke",{address:"Thika Road, Nairobi",leadSource:"Cold Call",servicesInterested:["Labour Laws Training"],assignedTo:"u_jane"}),
+    Co("co12","GreenLeaf Retail Mart","Retail","Eldoret","PENDING","+254 725 330 442","info@greenleafmart.co.ke",{address:"Uganda Road, Eldoret",leadSource:"Walk-in",servicesInterested:["Customer Service Training"],assignedTo:"u_david"}),
+    Co("co13","PrimePoint Realtors","Real Estate","Nairobi","PENDING","+254 708 220 114","hello@primepoint.co.ke",{address:"Kindaruma Road, Nairobi",leadSource:"Instagram",servicesInterested:["Recruitment"],assignedTo:"u_jane"}),
+    Co("co14","Summit Advisory Group","Professional Services","Nairobi","SILVER","+254 20 765 4321","contact@summitadvisory.co.ke",{address:"Upper Hill, Nairobi",leadSource:"Networking",servicesInterested:["Executive Search"],servicesProvided:["Executive Search"],assignedTo:"u_admin"})
+  ];
+  const Ct=(id,name,jobTitle,companyId,extra)=>{ const co=companies.find(c=>c.id===companyId); return Object.assign({id,name,jobTitle,department:"",companyId,industry:co.industry,location:co.location,phone:"",whatsapp:"",email:"",contactType:"Primary",decisionMaker:false,hrContact:false,relationshipStatus:"Warm",category:co.category,firstContacted:LW,lastContact:"",nextFollowUp:"",preferredMethod:"Phone",leadSource:co.leadSource,assignedTo:co.assignedTo,notes:"",tags:[],createdBy:co.assignedTo,dateAdded:LW},extra||{}); };
+  const contacts=[
+    Ct("ct1","Grace Mwangi","HR Manager","co1",{phone:"+254 722 100 201",whatsapp:"+254 722 100 201",email:"g.mwangi@sarovahotels.com",decisionMaker:true,hrContact:true,department:"Human Resources",lastContact:Y,assignedTo:"u_jane"}),
+    Ct("ct2","Joseph Karani","General Manager","co1",{phone:"+254 733 100 202",email:"j.karani@sarovahotels.com",decisionMaker:true,department:"Executive",relationshipStatus:"Hot",assignedTo:"u_admin"}),
+    Ct("ct3","Antoine Dubois","Executive Chef","co1",{phone:"+254 744 100 203",email:"a.dubois@sarovahotels.com",department:"F&B",lastContact:Y2}),
+    Ct("ct4","Kevin Omondi","Waiter","co1",{phone:"+254 711 300 401",whatsapp:"+254 711 300 401",department:"F&B",relationshipStatus:"Cold",tags:["mass-recruitment"]}),
+    Ct("ct5","Faith Achieng","Waitress","co1",{phone:"+254 722 300 402",whatsapp:"+254 722 300 402",department:"F&B",relationshipStatus:"Cold",tags:["mass-recruitment"]}),
+    Ct("ct6","Brian Otieno","Restaurant Server","co1",{phone:"+254 733 300 403",department:"F&B",relationshipStatus:"Cold",tags:["mass-recruitment"]}),
+    Ct("ct7","Rebecca Njeri","Hotel Manager","co2",{phone:"+254 700 500 101",email:"r.njeri@prideinn.co.ke",decisionMaker:true,department:"Operations",lastContact:Y,assignedTo:"u_david"}),
+    Ct("ct8","Collins Kiprop","HR Officer","co2",{phone:"+254 711 500 102",whatsapp:"+254 711 500 102",email:"c.kiprop@prideinn.co.ke",hrContact:true,department:"Human Resources",assignedTo:"u_david"}),
+    Ct("ct9","Mary Wambui","Sous Chef","co2",{phone:"+254 722 500 103",department:"F&B",assignedTo:"u_david"}),
+    Ct("ct10","Linet Moraa","Waitress","co2",{phone:"+254 733 500 104",whatsapp:"+254 733 500 104",department:"F&B",assignedTo:"u_david"}),
+    Ct("ct11","Samuel Njoroge","Branch Manager","co3",{phone:"+254 700 700 101",email:"s.njoroge@javahouseafrica.com",decisionMaker:true,assignedTo:"u_jane"}),
+    Ct("ct12","Esther Wanjiru","Head Chef","co3",{phone:"+254 722 700 102",department:"Kitchen",assignedTo:"u_jane"}),
+    Ct("ct13","Susan Atieno","HR Manager","co4",{phone:"+254 733 900 101",email:"s.atieno@coastcereals.co.ke",hrContact:true,decisionMaker:true,department:"Human Resources",lastContact:Y2,assignedTo:"u_david"}),
+    Ct("ct14","Daniel Kimani","Procurement Officer","co4",{phone:"+254 744 900 102",email:"d.kimani@coastcereals.co.ke",department:"Procurement",assignedTo:"u_david"}),
+    Ct("ct15","Rachel Muthoni","Production Manager","co4",{phone:"+254 755 900 103",department:"Production",assignedTo:"u_david"}),
+    Ct("ct16","James Muriithi","Chief Executive Officer","co5",{phone:"+254 700 200 101",email:"jmuriithi@swiftcargo.co.ke",decisionMaker:true,department:"Executive",relationshipStatus:"Hot",lastContact:Y,assignedTo:"u_admin"}),
+    Ct("ct17","Nancy Wairimu","HR Manager","co5",{phone:"+254 711 200 102",whatsapp:"+254 711 200 102",email:"n.wairimu@swiftcargo.co.ke",hrContact:true,decisionMaker:true,department:"Human Resources",lastContact:Y,assignedTo:"u_jane"}),
+    Ct("ct18","Michael Owuor","Operations Manager","co5",{phone:"+254 722 200 103",email:"m.owuor@swiftcargo.co.ke",department:"Operations"}),
+    Ct("ct19","George Onyango","Managing Director","co6",{phone:"+254 700 400 101",email:"g.onyango@buildmart.co.ke",decisionMaker:true,relationshipStatus:"Warm",assignedTo:"u_jane"}),
+    Ct("ct20","Peter Njoroge","Site Engineer","co6",{phone:"+254 711 400 102",department:"Projects",assignedTo:"u_jane"}),
+    Ct("ct21","Mercy Chebet","HR Officer","co6",{phone:"+254 722 400 103",email:"m.chebet@buildmart.co.ke",hrContact:true,assignedTo:"u_david"}),
+    Ct("ct22","Faith Odhiambo","Branch Manager","co7",{phone:"+254 700 600 101",email:"f.odhiambo@equatorialbank.co.ke",decisionMaker:true,lastContact:Y2,assignedTo:"u_david"}),
+    Ct("ct23","Victor Barasa","Credit Officer","co7",{phone:"+254 711 600 102",department:"Credit",assignedTo:"u_david"}),
+    Ct("ct24","Dr. Rose Nyambura","Hospital Administrator","co8",{phone:"+254 700 800 101",email:"r.nyambura@coastgeneral.or.ke",decisionMaker:true,department:"Administration",lastContact:Y,assignedTo:"u_admin"}),
+    Ct("ct25","Victor Ouma","HR Manager","co8",{phone:"+254 711 800 102",whatsapp:"+254 711 800 102",email:"v.ouma@coastgeneral.or.ke",hrContact:true,decisionMaker:true,department:"Human Resources",lastContact:Y,assignedTo:"u_jane"}),
+    Ct("ct26","Ruth Kendi","Head Nurse","co8",{phone:"+254 722 800 103",department:"Nursing",assignedTo:"u_jane"}),
+    Ct("ct27","Pauline Mokeira","Registered Nurse","co8",{phone:"+254 733 800 104",department:"Nursing",tags:["nursing-pool"],assignedTo:"u_david"}),
+    Ct("ct28","Kevin Wafula","Nurse","co8",{phone:"+254 744 800 105",department:"Nursing",tags:["nursing-pool"],assignedTo:"u_david"}),
+    Ct("ct29","Dr. Allan Kiptoo","Medical Officer","co8",{phone:"+254 755 800 106",email:"a.kiptoo@coastgeneral.or.ke",department:"Medical",assignedTo:"u_admin"}),
+    Ct("ct30","Winnie Adhiambo","Programs Manager","co9",{phone:"+254 700 100 301",email:"w.adhiambo@hopebridge.org",assignedTo:"u_jane"}),
+    Ct("ct31","Tabitha Wanjiru","Principal","co10",{phone:"+254 722 100 501",email:"principal@sunriseacademy.sc.ke",decisionMaker:true,relationshipStatus:"Warm",assignedTo:"u_david"}),
+    Ct("ct32","John Kagwa","Bursar (Accountant)","co10",{phone:"+254 733 100 502",department:"Finance",assignedTo:"u_david"}),
+    Ct("ct33","Stephen Maina","Operations Manager","co11",{phone:"+254 700 300 101",email:"s.maina@secureshield.co.ke",assignedTo:"u_jane"}),
+    Ct("ct34","Dennis Kiptoo","Security Supervisor","co11",{phone:"+254 711 300 102",department:"Field Operations",assignedTo:"u_jane"}),
+    Ct("ct35","Lydia Jeptoo","Store Manager","co12",{phone:"+254 722 500 201",assignedTo:"u_david"}),
+    Ct("ct36","Diana Achieng","Chief Executive Officer","co13",{phone:"+254 700 900 101",email:"d.achieng@primepoint.co.ke",decisionMaker:true,relationshipStatus:"Warm",assignedTo:"u_jane"}),
+    Ct("ct37","Brian Kilonzo","Sales Manager","co13",{phone:"+254 711 900 102",department:"Sales",assignedTo:"u_jane"}),
+    Ct("ct38","Hassan Noor","Managing Partner","co14",{phone:"+254 700 110 101",email:"h.noor@summitadvisory.co.ke",decisionMaker:true,assignedTo:"u_admin"}),
+    Ct("ct39","Irene Kamau","HR Consultant","co14",{phone:"+254 711 110 102",email:"i.kamau@summitadvisory.co.ke",assignedTo:"u_admin"})
+  ];
+  const Ld=(id,contactName,companyId,jobTitle,source,status,extra)=>{ const co=companies.find(c=>c.id===companyId); return Object.assign({id,contactName,companyId,jobTitle,industry:co.industry,location:co.location,source,channel:source,dateContacted:Y,service:"Recruitment",status,assignedTo:co.assignedTo,followUpDate:T,notes:"",createdBy:co.assignedTo,dateAdded:Y},extra||{}); };
+  const leads=[
+    Ld("ld1","George Onyango","co6","Managing Director","LinkedIn","Follow-Up Required",{service:"HR Policies",assignedTo:"u_jane",followUpDate:T,notes:"Requested draft HR policy framework."}),
+    Ld("ld2","Tabitha Wanjiru","co10","Principal","Facebook","Interested",{service:"Recruitment",assignedTo:"u_david",followUpDate:TOM,notes:"Wants 2 teachers for Jan intake."}),
+    Ld("ld3","Diana Achieng","co13","Chief Executive Officer","Instagram","Proposal Sent",{service:"Recruitment",assignedTo:"u_jane",followUpDate:T,notes:"Proposal sent 12 Sept — awaiting feedback."}),
+    Ld("ld4","Lydia Jeptoo","co12","Store Manager","Walk-in","New",{service:"Customer Service Training",assignedTo:"u_david",followUpDate:T2}),
+    Ld("ld5","Stephen Maina","co11","Operations Manager","Cold Call","Contacted",{service:"Labour Laws Training",assignedTo:"u_jane",followUpDate:T3}),
+    Ld("ld6","Winnie Adhiambo","co9","Programs Manager","Website","No Response",{service:"HR Policies",assignedTo:"u_jane",followUpDate:Y}),
+    Ld("ld7","Dr. Rose Nyambura","co8","Hospital Administrator","Referral","Converted",{service:"Mental Health Training",assignedTo:"u_admin",followUpDate:"",notes:"Closed — training scheduled for next month."}),
+    Ld("ld8","Samuel Njoroge","co3","Branch Manager","Cold Call","Not Interested",{service:"Customer Service Training",assignedTo:"u_jane",followUpDate:""})
+  ];
+  const F=(id,contactId,date,method,purpose,status,extra)=>{ const ct=contacts.find(c=>c.id===contactId); return Object.assign({id,contactId,companyId:ct.companyId,assignedTo:ct.assignedTo,date,method,purpose,status,notes:"",createdBy:ct.assignedBy||ct.assignedTo,createdAt:date+" 09:00:00",completedAt:"",resultNote:""},extra||{}); };
+  const followups=[
+    F("fu1","ct1",Y,"Phone Call","Discuss Q4 training calendar","pending",{assignedTo:"u_jane",notes:"Confirm decision on customer service training dates."}),
+    F("fu2","ct17",Y,"WhatsApp","Send executive search shortlist","pending",{assignedTo:"u_jane"}),
+    F("fu3","ct3",T,"Phone Call","Chef recruitment kickoff call","pending",{assignedTo:"u_jane",notes:"Head chef position — 2 candidates ready."}),
+    F("fu4","ct13",T,"Meeting","Payroll services review","pending",{assignedTo:"u_david"}),
+    F("fu5","ct19",T,"Phone Call","Follow up on HR policy proposal","pending",{assignedTo:"u_jane",notes:"Proposal sent last week."}),
+    F("fu6","ct24",T,"WhatsApp","Confirm mental health training dates","pending",{assignedTo:"u_admin"}),
+    F("fu7","ct31",TOM,"Phone Call","Teacher recruitment requirements","pending",{assignedTo:"u_david"}),
+    F("fu8","ct36",T2,"Meeting","Walkthrough recruitment proposal","pending",{assignedTo:"u_jane"}),
+    F("fu9","ct16",T3,"Meeting","Quarterly HR audit planning","pending",{assignedTo:"u_admin"}),
+    F("fu10","ct25",Y2,"Phone Call","Nursing pool intake discussion","completed",{assignedTo:"u_jane",completedAt:Y2+" 15:30:00",resultNote:"Agreed on 10 candidates shortlist."}),
+    F("fu11","ct22",Y2,"Email","Finance training scheduling","completed",{assignedTo:"u_david",completedAt:Y2+" 11:10:00",resultNote:"Dates confirmed for October."})
+  ];
+  const It=(id,contactId,date,type,notes,nextAction,employeeId)=>{ const ct=contacts.find(c=>c.id===contactId); return {id,contactId,companyId:ct.companyId,employeeId:employeeId||ct.assignedTo,date,type,notes,nextAction,nextFollowUpDate:"",createdAt:date+" 10:00:00"}; };
+  const interactions=[
+    It("in1","ct1",Y2,"Phone Call","Discussed employee training requirements for Q4.","Send training catalogue","u_jane"),
+    It("in2","ct1",Y,"WhatsApp","Sent training information and pricing.","Await feedback","u_jane"),
+    It("in3","ct3",Y,"Phone Call","Reviewed candidate profiles for head chef role.","Schedule interviews","u_jane"),
+    It("in4","ct17",Y2,"Meeting","Discussed leadership development programme.","Prepare shortlist","u_jane"),
+    It("in5","ct25",Y,"WhatsApp","Client requested quotation for nursing recruitment.","Send quotation","u_jane"),
+    It("in6","ct24",Y2,"Proposal","Submitted mental health training proposal.","Follow up on approval","u_admin"),
+    It("in7","ct13",Y2,"Site Visit","Payroll process review at Coast Cereals.","Draft service review notes","u_david"),
+    It("in8","ct31",Y,"Phone Call","Initial call — interested in teacher recruitment.","Send service overview","u_david"),
+    It("in9","ct19",Y2,"LinkedIn","Connected and shared HR policy samples.","Book discovery call","u_jane"),
+    It("in10","ct16",Y,"Meeting","Quarterly business review with CEO.","Plan HR audit","u_admin")
+  ];
+  return {seq:1000,users,settings:{startTime:"08:00",companyName:"Polar HR Consultancy Company Limited"},companies,contacts,leads,followups,interactions,attendance:[]};
+}
+
+/* ---------- LOOKUPS ---------- */
+function coById(id){ return db.companies.find(c=>c.id===id); }
+function ctById(id){ return db.contacts.find(c=>c.id===id); }
+function userById(id){ return db.users.find(u=>u.id===id); }
+function coName(id){ const c=coById(id); return c?c.name:"—"; }
+function userName(id){ const u=userById(id); return u?u.name:"—"; }
+function catBadge(cat){ return '<span class="badge b-'+esc(cat)+'">'+esc(cat)+'</span>'; }
+function leadBadge(s){ const map={"New":"b-blue","Contacted":"b-gray","Interested":"b-amber","Follow-Up Required":"b-amber","Proposal Sent":"b-blue","Negotiation":"b-blue","Converted":"b-green","No Response":"b-red","Not Interested":"b-red","Lost":"b-red"}; return '<span class="badge '+(map[s]||"b-gray")+'">'+esc(s)+'</span>'; }
+function fuBadge(f){ const t=today(); if(f.status!=="pending"){ const m={completed:"b-green",no_response:"b-gray",not_interested:"b-red",converted:"b-green"}; return '<span class="badge '+(m[f.status]||"b-gray")+'">'+esc(f.status.replace("_"," "))+'</span>'; } if(f.date<t) return '<span class="badge b-red">Overdue</span>'; if(f.date===t) return '<span class="badge b-amber">Today</span>'; return '<span class="badge b-blue">Upcoming</span>'; }
+function nextFollowupFor(contactId){ const t=today(); return db.followups.filter(f=>f.contactId===contactId&&f.status==="pending").sort((a,b)=>a.date<b.date?-1:1)[0]; }
+function nextFollowupDateFor(contactId){ const f=nextFollowupFor(contactId); return f?f.date:""; }
+function companyNextFollowup(coId){ const t=today(); return db.followups.filter(f=>f.companyId===coId&&f.status==="pending").sort((a,b)=>a.date<b.date?-1:1)[0]; }
+function touchCompany(coId,dateStr){ const co=coById(coId); if(co){ co.lastInteraction=dateStr||today(); } }
+function initials(name){ return name.split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase(); }
+function tagsHtml(tags){ return (tags&&tags.length)?'<div class="chips" style="margin-top:6px">'+tags.map(t=>'<span class="chip">'+esc(t)+'</span>').join("")+'</div>':""; }
+
+/* ---------- AUTH & SESSION ---------- */
+let session=null;
+function doLogin(e){ e.preventDefault(); const em=document.getElementById("liEmail").value.trim().toLowerCase(); const pw=document.getElementById("liPass").value;
+  const u=db.users.find(x=>x.email.toLowerCase()===em&&x.pass===pw);
+  const err=document.getElementById("loginErr");
+  if(!u){ err.textContent="Invalid email or password."; err.classList.remove("hidden"); return false; }
+  if(!u.active){ err.textContent="This account is inactive. Contact your administrator."; err.classList.remove("hidden"); return false; }
+  session=u; localStorage.setItem("polarhr_session",u.id);
+  checkIn(u);
+  err.classList.add("hidden"); document.getElementById("liPass").value="";
+  enterApp(); toast("Welcome back, "+esc(u.name.split(" ")[0])+". Have a productive day.","ok");
+  return false;
+}
+function checkIn(u){ const t=today(); let rec=db.attendance.find(a=>a.userId===u.id&&a.date===t);
+  const late=nowHM()>db.settings.startTime;
+  if(!rec){ db.attendance.push({id:uid("att"),userId:u.id,date:t,loginTime:nowHMS(),logoutTime:"",status:late?"Late":"Present"}); }
+  else if(!rec.loginTime){ rec.loginTime=nowHMS(); rec.status=late?"Late":"Present"; }
+  saveDB();
+}
+function doLogout(){ const t=today(); const rec=db.attendance.find(a=>a.userId===session.id&&a.date===t); if(rec&&!rec.logoutTime){ rec.logoutTime=nowHMS(); saveDB(); }
+  localStorage.removeItem("polarhr_session"); session=null;
+  document.getElementById("app").classList.add("hidden"); document.getElementById("loginScreen").classList.remove("hidden");
+}
+function restoreSession(){ const id=localStorage.getItem("polarhr_session"); if(!id) return; const u=userById(id); if(u&&u.active){ session=u; checkIn(u); enterApp(); } }
+function canManage(){ return session&&(session.role==="admin"||session.role==="management"); }
+function isAdmin(){ return session&&session.role==="admin"; }
+
+/* ---------- APP SHELL ---------- */
+const NAV=[
+  {h:"#/dashboard",ic:"dash",t:"Dashboard",roles:["admin","management","staff"]},
+  {h:"#/companies",ic:"bldg",t:"Companies",roles:["admin","management","staff"]},
+  {h:"#/contacts",ic:"users",t:"Contacts",roles:["admin","management","staff"]},
+  {h:"#/leads",ic:"target",t:"Leads & Marketing",roles:["admin","management","staff"]},
+  {h:"#/followups",ic:"cal",t:"Follow-Ups",roles:["admin","management","staff"]},
+  {h:"#/interactions",ic:"chat",t:"Interactions",roles:["admin","management","staff"]},
+  {h:"#/activity",ic:"pulse",t:"Staff Activity",roles:["admin","management"]},
+  {h:"#/reports",ic:"chart",t:"Reports",roles:["admin","management"]},
+  {h:"#/users",ic:"cog",t:"Users",roles:["admin"]},
+  {h:"#/settings",ic:"cog",t:"Settings",roles:["admin"]}
+];
+function enterApp(){ document.getElementById("loginScreen").classList.add("hidden"); document.getElementById("app").classList.remove("hidden");
+  document.getElementById("sbUserName").textContent=session.name; document.getElementById("sbUserRole").textContent=session.role;
+  document.getElementById("tbName").textContent=session.name; document.getElementById("tbRole").textContent=session.role; document.getElementById("tbAvatar").textContent=initials(session.name);
+  buildNav(); if(!location.hash) location.hash="#/dashboard"; route();
+}
+function buildNav(){ document.getElementById("sbNav").innerHTML=NAV.filter(n=>n.roles.includes(session.role)).map(n=>'<div class="nav-item" id="nav-'+n.h+'" onclick="go(\''+n.h+'\')">'+IC[n.ic]+'<span>'+n.t+'</span></div>').join(""); }
+function go(h){ location.hash=h; toggleSb(false); }
+function toggleSb(force){ const sb=document.getElementById("sidebar"); const ov=document.getElementById("sbOverlay"); const open=force!==undefined?force:!sb.classList.contains("open"); sb.classList.toggle("open",open); ov.classList.toggle("show",open); }
+function doGlobalSearch(){ const q=document.getElementById("globalSearch").value.trim(); state.q=q; state.filters={}; if(location.hash.indexOf("#/contacts")!==0){ location.hash="#/contacts"; } else { renderContacts(); } }
+window.addEventListener("hashchange",route);
+
+/* ---------- ROUTER ---------- */
+let state={q:"",filters:{},fuTab:"today",leadFilter:"All",coFilter:"All",activityDate:today(),repFrom:dstr(addDays(-30)),repTo:today()};
+function route(){ if(!session) return; toggleSb(false);
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  const h=location.hash||"#/dashboard"; const nav=NAV.find(n=>n.h===h.split("/").slice(0,2).join("/")); 
+  if(!nav||!nav.roles.includes(session.role)){ location.hash="#/dashboard"; return; }
+  const el=document.getElementById("nav-"+nav.h); if(el) el.classList.add("active");
+  const p=h.split("/");
+  if(p[1]==="company"&&p[2]) return renderCompanyDetail(p[2]);
+  if(p[1]==="contact"&&p[2]) return renderContactDetail(p[2]);
+  ({dashboard:renderDashboard,companies:renderCompanies,contacts:renderContacts,leads:renderLeads,followups:renderFollowups,interactions:renderInteractions,activity:renderActivity,reports:renderReports,users:renderUsers,settings:renderSettings}[p[1]]||renderDashboard)();
+  window.scrollTo(0,0);
+}
+function page(html){ document.getElementById("page").innerHTML=html; }
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+function renderDashboard(){ const t=today(); const me=session.id; const isStaff=session.role==="staff";
+  const fuAll=db.followups.filter(f=>f.status==="pending");
+  const fuToday=fuAll.filter(f=>f.date===t), fuOver=fuAll.filter(f=>f.date<t), fuUp=fuAll.filter(f=>f.date>t);
+  const myFuToday=fuToday.filter(f=>f.assignedTo===me), myFuOver=fuOver.filter(f=>f.assignedTo===me);
+  const newLeadsToday=db.leads.filter(l=>l.dateAdded===t&&(l.assignedTo===me||!isStaff));
+  const myActions=fuAll.filter(f=>f.assignedTo===me);
+  const attToday=db.attendance.filter(a=>a.date===t);
+  const newContactsMonth=db.contacts.filter(c=>c.dateAdded&&c.dateAdded.slice(0,7)===t.slice(0,7)).length;
+
+  let stats;
+  if(isStaff){
+    stats=[["Follow-ups Due Today",myFuToday.length,"#1565D8"],["Overdue Follow-ups",myFuOver.length,"#DC2626"],["New Leads",newLeadsToday.length,"#B45309"],["Open Actions",myActions.length,"#15803D"]];
+  } else {
+    stats=[["Total Companies",db.companies.length,"#1565D8"],["VIP Clients",db.companies.filter(c=>c.category==="VIP").length,"#B45309"],["Total Contacts",db.contacts.length,"#123A63"],["Pending Prospects",db.companies.filter(c=>c.category==="PENDING").length,"#1D4ED8"],["New Leads (30d)",db.leads.filter(l=>l.dateAdded>=dstr(addDays(-30))).length,"#7C3AED"],["Follow-ups Due Today",fuToday.length,"#15803D"],["Overdue",fuOver.length,"#DC2626"],["Staff Logged In",attToday.length+" / "+db.users.filter(u=>u.active).length,"#0E7490"]];
+  }
+  const myFollowups=(isStaff?myFuToday:fuToday).sort((a,b)=>a.date<b.date?-1:1);
+  const statHtml=stats.map(s=>'<div class="stat"><div class="num">'+s[1]+'</div><div class="lbl"><span class="dot" style="background:'+s[2]+'"></span>'+s[0]+'</div></div>').join("");
+
+  let rightCol;
+  if(canManage()){
+    const recentActs=[...db.interactions.map(i=>({d:i.date,t:"Interaction",w:userName(i.employeeId)+" — "+i.type+" with "+ctById(i.contactId).name})),...db.followups.filter(f=>f.status==="completed").map(f=>({d:f.date,t:"Follow-up done",w:userName(f.assignedTo)+" — "+ctById(f.contactId).name})),...db.leads.slice(-6).map(l=>({d:l.dateAdded,t:"Lead",w:userName(l.assignedBy||l.assignedTo)+" — "+l.contactName+" ("+l.status+")"}))].sort((a,b)=>a.d<b.d?1:-1).slice(0,8);
+    const attRows=db.users.filter(u=>u.active).map(u=>{ const a=attToday.find(x=>x.userId===u.id); return '<tr><td><b>'+esc(u.name)+'</b></td><td>'+(a?a.loginTime.slice(0,5):"—")+'</td><td>'+(a&&a.logoutTime?a.logoutTime.slice(0,5):"—")+'</td><td>'+(a?(a.status==="Late"?'<span class="badge b-amber">Late</span>':'<span class="badge b-green">Present</span>'):'<span class="badge b-red">Not Logged In</span>')+'</td></tr>'; }).join("");
+    rightCol='<div class="card"><div class="card-h"><h3>Staff Today</h3><a class="sub" href="#/activity">View all →</a></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Staff</th><th>In</th><th>Out</th><th>Status</th></tr></thead><tbody>'+attRows+'</tbody></table></div></div>'
+      +'<div class="card"><div class="card-h"><h3>Recent Activity</h3></div><div class="card-b"><div class="timeline">'+recentActs.map(a=>'<div class="tl-item"><div class="tl-date">'+fmtDate(a.d)+' · '+a.t+'</div><div class="tl-body">'+esc(a.w)+'</div></div>').join("")+'</div></div></div>';
+  } else {
+    const mine=db.interactions.filter(i=>i.employeeId===me).sort((a,b)=>a.date<b.date?1:-1).slice(0,6);
+    rightCol='<div class="card"><div class="card-h"><h3>My Recent Interactions</h3></div><div class="card-b">'+(mine.length?'<div class="timeline">'+mine.map(i=>'<div class="tl-item"><div class="tl-date">'+fmtDate(i.date)+'</div><div class="tl-title">'+esc(i.type)+' — '+esc(ctById(i.contactId)?ctById(i.contactId).name:"")+'</div><div class="tl-body">'+esc(i.notes)+'</div></div>').join("")+'</div>':'<div class="empty"><b>No interactions yet</b>Record your first interaction today.</div>')+'</div></div>';
+  }
+
+  const leadPipe=LEAD_STATUSES.map(s=>[s,db.leads.filter(l=>l.status===s).length]).filter(x=>x[1]>0);
+  const maxPipe=Math.max(1,...leadPipe.map(x=>x[1]));
+  const pipeHtml=leadPipe.map(x=>'<div class="bar-row"><div class="bl">'+esc(x[0])+'</div><div class="track"><div class="fill" style="width:'+Math.round(x[1]/maxPipe*100)+'%"></div></div><div class="bv">'+x[1]+'</div></div>').join("");
+
+  page('<div class="page-head"><div><h1>'+timeGreet()+', '+esc(session.name.split(" ")[0])+' 👋</h1><p>'+new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"})+'</p></div></div>'
+  +'<div class="grid-stats">'+statHtml+'</div>'
+  +'<div class="two-col"><div>'
+  +'<div class="card"><div class="card-h"><h3>Today\'s Follow-Ups <span class="sub">('+myFollowups.length+')</span></h3><a class="sub" href="#/followups">Open Follow-Ups →</a></div>'
+  +(myFollowups.length?'<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Contact</th><th>Company</th><th>Purpose</th><th>Time</th><th></th></tr></thead><tbody>'
+    +myFollowups.map(f=>{const c=ctById(f.contactId);return '<tr class="clickable" onclick="go(\'#/contact/'+c.id+'\')"><td><b>'+esc(c.name)+'</b></td><td>'+esc(coName(f.companyId))+'</td><td>'+esc(f.purpose)+'</td><td>'+fuBadge(f)+'</td><td onclick="event.stopPropagation()"><button class="btn btn-green btn-xs" onclick="completeFollowup(\''+f.id+'\')">Complete</button></td></tr>';}).join("")+'</tbody></table></div>'
+    :'<div class="empty"><b>Nothing due today 🎉</b>Enjoy your day or schedule a follow-up.</div>')+'</div>'
+  +(canManage()?'<div class="card"><div class="card-h"><h3>Lead Pipeline</h3><a class="sub" href="#/leads">Open Leads →</a></div><div class="card-b">'+pipeHtml+'</div></div>':"")
+  +'</div><div>'
+  +'<div class="card"><div class="card-h"><h3>Quick Actions</h3></div><div class="card-b"><div class="quick-grid">'
+  +'<div class="qa" onclick="openCompanyModal()"><div class="ic">'+IC.plus+'</div>Add Company</div>'
+  +'<div class="qa" onclick="openContactModal()"><div class="ic">'+IC.plus+'</div>Add Contact</div>'
+  +'<div class="qa" onclick="openLeadModal()"><div class="ic">'+IC.plus+'</div>Add Lead</div>'
+  +'<div class="qa" onclick="openInteractionModal()"><div class="ic">'+IC.chat+'</div>Record Interaction</div>'
+  +'<div class="qa" onclick="openFollowupModal()"><div class="ic">'+IC.cal+'</div>Schedule Follow-Up</div>'
+  +'<div class="qa" onclick="document.getElementById(\'globalSearch\').focus()"><div class="ic">'+IC.search+'</div>Search Contacts</div>'
+  +'</div></div></div>'
+  +rightCol+'</div></div>');
+}
+
+/* ============================================================
+   COMPANIES
+   ============================================================ */
+function renderCompanies(){ const q=(state.coQ||"").toLowerCase(); const f=state.coFilter;
+  let list=db.companies.filter(c=>(f==="All"||c.category===f)&&(!q||(c.name+" "+c.industry+" "+c.location+" "+c.phone+" "+c.email).toLowerCase().includes(q)));
+  list.sort((a,b)=>a.name<b.name?-1:1);
+  const counts=cat=>({VIP:0,SILVER:0,BRONZE:0,PENDING:0,...db.companies.reduce((m,c)=>{m[c.category]=(m[c.category]||0)+1;return m;},{})});
+  const cc=counts();
+  const chips=['All','VIP','SILVER','BRONZE','PENDING'].map(k=>'<button class="btn btn-sm '+(f===k?'btn-primary':'btn-ghost')+'" onclick="state.coFilter=\''+k+'\';renderCompanies()">'+k+(k!=='All'?' <span style="opacity:.7">('+(k==='All'?db.companies.length:cc[k]||0)+')</span>':'')+'</button>').join("");
+  page('<div class="page-head"><div><h1>Companies</h1><p>'+db.companies.length+' organizations · '+db.companies.filter(c=>c.category==="PENDING").length+' pending prospects</p></div><div class="head-actions"><button class="btn btn-primary" onclick="openCompanyModal()">'+IC.plus+' Add Company</button></div></div>'
+  +'<div class="filters"><div class="fg grow"><input class="fi" placeholder="Search companies…" value="'+esc(state.coQ||"")+'" oninput="state.coQ=this.value;renderCompanies();this.focus();this.setSelectionRange(this.value.length,this.value.length)"></div><div style="display:flex;gap:6px;flex-wrap:wrap">'+chips+'</div></div>'
+  +'<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Company</th><th>Industry</th><th>Location</th><th>Category</th><th>Phone</th><th>Contacts</th><th>Next Follow-Up</th><th>Assigned</th></tr></thead><tbody>'
+  +(list.length?list.map(c=>{const nf=companyNextFollowup(c.id);return '<tr class="clickable" onclick="go(\'#/company/'+c.id+'\')"><td><b>'+esc(c.name)+'</b></td><td>'+esc(c.industry)+'</td><td>'+esc(c.location)+'</td><td>'+catBadge(c.category)+'</td><td>'+esc(c.phone||"—")+'</td><td>'+db.contacts.filter(x=>x.companyId===c.id).length+'</td><td>'+(nf?fuBadge(nf):"—")+'</td><td>'+esc(userName(c.assignedTo))+'</td></tr>';}).join(""):'<tr><td colspan="8"><div class="empty"><b>No companies found</b>Adjust your search or add a new company.</div></td></tr>')
+  +'</tbody></table></div></div>');
+}
+
+function renderCompanyDetail(id){ const c=coById(id); if(!c){ go("#/companies"); return; }
+  const cts=db.contacts.filter(x=>x.companyId===id);
+  const fus=db.followups.filter(f=>f.companyId===id).sort((a,b)=>a.date<b.date?1:-1);
+  const its=db.interactions.filter(i=>i.companyId===id).sort((a,b)=>a.date<b.date?1:-1);
+  const nf=companyNextFollowup(id);
+  page('<div class="page-head"><div><h1>'+esc(c.name)+' &nbsp;'+catBadge(c.category)+'</h1><p>'+esc(c.industry)+' · '+esc(c.location)+' · Added '+fmtDate(c.dateAdded)+'</p></div>'
+  +'<div class="head-actions"><button class="btn btn-ghost" onclick="openContactModal(null,\''+id+'\')">'+IC.plus+' Add Contact</button><button class="btn btn-ghost" onclick="openInteractionModal(null,\''+id+'\')">Record Interaction</button><button class="btn btn-ghost" onclick="openFollowupModal(null,\''+id+'\')">Schedule Follow-Up</button><button class="btn btn-primary" onclick="openCompanyModal(\''+id+'\')">Edit</button></div></div>'
+  +'<div class="card"><div class="card-b"><div class="info-grid">'
+  +'<div class="ii"><b>Phone</b><span>'+esc(c.phone||"—")+'</span></div><div class="ii"><b>Email</b><span>'+esc(c.email||"—")+'</span></div>'
+  +'<div class="ii"><b>Website</b><span>'+(c.website?'<a href="http://'+esc(c.website)+'" target="_blank">'+esc(c.website)+'</a>':"—")+'</span></div>'
+  +'<div class="ii"><b>Address</b><span>'+esc(c.address||"—")+'</span></div>'
+  +'<div class="ii"><b>Lead Source</b><span>'+esc(c.leadSource||"—")+'</span></div><div class="ii"><b>Assigned To</b><span>'+esc(userName(c.assignedTo))+'</span></div>'
+  +'<div class="ii"><b>Last Interaction</b><span>'+fmtDate(c.lastInteraction)+'</span></div><div class="ii"><b>Next Follow-Up</b><span>'+(nf?fmtDate(nf.date):"—")+'</span></div>'
+  +'</div>'
+  +(c.servicesInterested&&c.servicesInterested.length?'<div style="margin-top:14px"><b style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Services Interested In</b><div class="chips" style="margin-top:5px">'+c.servicesInterested.map(s=>'<span class="chip" style="background:#EAF1FB;color:#0E4CA6">'+esc(s)+'</span>').join("")+'</div></div>':"")
+  +(c.servicesProvided&&c.servicesProvided.length?'<div style="margin-top:10px"><b style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Services Previously Provided</b><div class="chips" style="margin-top:5px">'+c.servicesProvided.map(s=>'<span class="chip" style="background:var(--green-bg);color:var(--green)">'+esc(s)+'</span>').join("")+'</div></div>':"")
+  +(c.notes?'<div style="margin-top:14px"><b style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Notes</b><p style="margin-top:4px">'+esc(c.notes)+'</p></div>':"")
+  +tagsHtml(c.tags)+'</div></div>'
+  +'<div class="two-col"><div class="card"><div class="card-h"><h3>Contacts ('+cts.length+')</h3></div>'
+  +(cts.length?'<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Job Title</th><th>Phone</th><th>Category</th></tr></thead><tbody>'+cts.map(x=>'<tr class="clickable" onclick="go(\'#/contact/'+x.id+'\')"><td><b>'+esc(x.name)+'</b>'+(x.decisionMaker?' <span class="badge b-green">Decision Maker</span>':"")+(x.hrContact?' <span class="badge b-blue">HR</span>':"")+'</td><td>'+esc(x.jobTitle)+'</td><td>'+esc(x.phone||"—")+'</td><td>'+catBadge(x.category)+'</td></tr>').join("")+'</tbody></table></div>':'<div class="empty"><b>No contacts yet</b>Add the first person at this company.</div>')+'</div>'
+  +'<div><div class="card"><div class="card-h"><h3>Follow-Ups</h3></div><div class="card-b">'+(fus.length?fus.slice(0,8).map(f=>'<div style="padding:8px 0;border-bottom:1px solid #EEF2F7"><div style="display:flex;justify-content:space-between;gap:8px"><b style="font-size:13px">'+esc(ctById(f.contactId)?ctById(f.contactId).name:"")+'</b>'+fuBadge(f)+'</div><div style="font-size:12.5px;color:var(--muted)">'+fmtDate(f.date)+' · '+esc(f.method)+' · '+esc(f.purpose)+'</div></div>').join(""):'<div class="empty">No follow-ups scheduled.</div>')+'</div></div>'
+  +'<div class="card"><div class="card-h"><h3>Interaction History</h3></div><div class="card-b">'+(its.length?'<div class="timeline">'+its.map(i=>'<div class="tl-item"><div class="tl-date">'+fmtDate(i.date)+'</div><div class="tl-title">'+esc(i.type)+' — '+esc(userName(i.employeeId))+'</div><div class="tl-body">'+esc(i.notes)+(i.nextAction?'<br><span style="color:var(--muted)">Next: '+esc(i.nextAction)+'</span>':"")+'</div></div>').join("")+'</div>':'<div class="empty">No interactions recorded yet.</div>')+'</div></div></div></div>');
+}
+
+/* ============================================================
+   CONTACTS + SEARCH + FILTERS
+   ============================================================ */
+function matchContact(c,q){ q=q.trim().toLowerCase(); if(!q) return true;
+  const staff=userName(c.assignedTo);
+  const hay=[c.name,c.jobTitle,c.department,coName(c.companyId),c.industry,c.location,c.phone,c.whatsapp,c.email,c.category,c.relationshipStatus,c.leadSource,(c.tags||[]).join(" "),staff].join(" ").toLowerCase();
+  if(hay.includes(q)) return true;
+  for(const key in JOB_EXPAND){ if(q.startsWith(key)||key.startsWith(q)||key.includes(q)||q.includes(key)){ if(JOB_EXPAND[key].some(s=>c.jobTitle.toLowerCase().includes(s))) return true; } }
+  return false;
+}
+function filteredContacts(){ const F=state.filters;
+  return db.contacts.filter(c=>matchContact(c,state.q)
+    &&(!F.jobTitle||c.jobTitle.toLowerCase().includes(F.jobTitle.toLowerCase()))
+    &&(!F.company||c.companyId===F.company)
+    &&(!F.industry||c.industry===F.industry)
+    &&(!F.location||c.location===F.location)
+    &&(!F.category||c.category===F.category)
+    &&(!F.assigned||c.assignedTo===F.assigned)
+    &&(!F.leadSource||c.leadSource===F.leadSource)
+  ).sort((a,b)=>a.name<b.name?-1:1);
+}
+function uniqContacts(field){ return [...new Set(db.contacts.map(c=>c[field]).filter(Boolean))].sort(); }
+function selOpts(list,val,label){ return '<option value="">'+label+'</option>'+list.map(o=>'<option value="'+esc(o)+'"'+(val===o?" selected":"")+'>'+esc(o)+'</option>').join(""); }
+function renderContacts(){ const list=filteredContacts(); const F=state.filters;
+  const locs=uniqContacts("location"), inds=uniqContacts("industry");
+  const fHtml='<div class="filters">'
+  +'<div class="fg grow"><input class="fi" placeholder="Global search — try “Waiter”, “HR Manager”, “Mombasa”, “VIP”…" value="'+esc(state.q)+'" onkeydown="if(event.key===\'Enter\'){state.q=this.value;renderContacts()}" onchange="state.q=this.value;renderContacts()"></div>'
+  +'<div class="fg"><input class="fi" placeholder="Job title contains…" value="'+esc(F.jobTitle||"")+'" onchange="state.filters.jobTitle=this.value;renderContacts()"></div>'
+  +'<div class="fg"><select class="fi" onchange="state.filters.company=this.value;renderContacts()">'+selOpts(db.companies.map(c=>[c.id,c.name]),F.company,"All companies")+'</select></div>'
+  +'<div class="fg"><select class="fi" onchange="state.filters.industry=this.value;renderContacts()">'+selOpts(inds,F.industry,"All industries")+'</select></div>'
+  +'<div class="fg"><select class="fi" onchange="state.filters.location=this.value;renderContacts()">'+selOpts(locs,F.location,"All locations")+'</select></div>'
+  +'<div class="fg"><select class="fi" onchange="state.filters.category=this.value;renderContacts()">'+selOpts(CATEGORIES,F.category,"All categories")+'</select></div>'
+  +'<div class="fg"><select class="fi" onchange="state.filters.assigned=this.value;renderContacts()">'+selOpts(db.users.map(u=>[u.id,u.name]),F.assigned,"All staff")+'</select></div>'
+  +'<button class="btn btn-ghost btn-sm" onclick="state.filters={};state.q=\'\';renderContacts()">Clear Filters</button></div>';
+  page('<div class="page-head"><div><h1>Contacts</h1><p>'+list.length+' of '+db.contacts.length+' contacts'+(state.q?' · searching “'+esc(state.q)+'”':"")+'</p></div><div class="head-actions"><button class="btn btn-primary" onclick="openContactModal()">'+IC.plus+' Add Contact</button></div></div>'
+  +fHtml
+  +'<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Job Title</th><th>Company</th><th>Industry</th><th>Location</th><th>Phone</th><th>Category</th><th>Follow-Up</th></tr></thead><tbody>'
+  +(list.length?list.map(c=>{const nf=nextFollowupFor(c.id);return '<tr class="clickable" onclick="go(\'#/contact/'+c.id+'\')"><td><b>'+esc(c.name)+'</b>'+(c.decisionMaker?' <span class="badge b-green">DM</span>':"")+(c.hrContact?' <span class="badge b-blue">HR</span>':"")+'</td><td>'+esc(c.jobTitle)+'</td><td>'+esc(coName(c.companyId))+'</td><td>'+esc(c.industry)+'</td><td>'+esc(c.location)+'</td><td>'+esc(c.phone||"—")+'</td><td>'+catBadge(c.category)+'</td><td>'+(nf?fuBadge(nf):"—")+'</td></tr>';}).join(""):'<tr><td colspan="8"><div class="empty"><b>No matching contacts</b>Try a different search term or clear the filters.</div></td></tr>')
+  +'</tbody></table></div></div>');
+}
+
+function renderContactDetail(id){ const c=ctById(id); if(!c){ go("#/contacts"); return; }
+  const fus=db.followups.filter(f=>f.contactId===id).sort((a,b)=>a.date<b.date?1:-1);
+  const its=db.interactions.filter(i=>i.contactId===id).sort((a,b)=>a.date<b.date?1:-1);
+  const pend=nextFollowupFor(id);
+  page('<div class="page-head"><div><h1>'+esc(c.name)+' &nbsp;'+catBadge(c.category)+'</h1><p>'+esc(c.jobTitle)+(c.department?' · '+esc(c.department):"")+' at <a href="#/company/'+c.companyId+'">'+esc(coName(c.companyId))+'</a></p></div>'
+  +'<div class="head-actions"><button class="btn btn-ghost" onclick="openInteractionModal(\''+id+'\')">Record Interaction</button><button class="btn btn-ghost" onclick="openFollowupModal(\''+id+'\',\''+c.companyId+'\')">Schedule Follow-Up</button><button class="btn btn-primary" onclick="openContactModal(\''+id+'\')">Edit</button></div></div>'
+  +'<div class="card"><div class="card-b"><div class="info-grid">'
+  +'<div class="ii"><b>Phone</b><span>'+esc(c.phone||"—")+'</span></div><div class="ii"><b>WhatsApp</b><span>'+esc(c.whatsapp||"—")+'</span></div><div class="ii"><b>Email</b><span>'+esc(c.email||"—")+'</span></div>'
+  +'<div class="ii"><b>Industry</b><span>'+esc(c.industry)+'</span></div><div class="ii"><b>Location</b><span>'+esc(c.location)+'</span></div>'
+  +'<div class="ii"><b>Contact Type</b><span>'+esc(c.contactType||"—")+'</span></div><div class="ii"><b>Relationship</b><span>'+esc(c.relationshipStatus||"—")+'</span></div>'
+  +'<div class="ii"><b>Preferred Contact</b><span>'+esc(c.preferredMethod||"—")+'</span></div><div class="ii"><b>Lead Source</b><span>'+esc(c.leadSource||"—")+'</span></div>'
+  +'<div class="ii"><b>First Contacted</b><span>'+fmtDate(c.firstContacted)+'</span></div><div class="ii"><b>Last Contact</b><span>'+fmtDate(c.lastContact)+'</span></div>'
+  +'<div class="ii"><b>Assigned To</b><span>'+esc(userName(c.assignedTo))+'</span></div>'
+  +(c.decisionMaker?'<div class="ii"><b>Decision Maker</b><span class="badge b-green">Yes</span></div>':"")
+  +(c.hrContact?'<div class="ii"><b>HR Contact</b><span class="badge b-blue">Yes</span></div>':"")
+  +'</div>'+(c.notes?'<div style="margin-top:14px"><b style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Notes</b><p style="margin-top:4px">'+esc(c.notes)+'</p></div>':"")+tagsHtml(c.tags)+'</div></div>'
+  +'<div class="two-col"><div class="card"><div class="card-h"><h3>Interaction History ('+its.length+')</h3></div><div class="card-b">'+(its.length?'<div class="timeline">'+its.map(i=>'<div class="tl-item"><div class="tl-date">'+fmtDate(i.date)+'</div><div class="tl-title">'+esc(i.type)+' — '+esc(userName(i.employeeId))+'</div><div class="tl-body">'+esc(i.notes)+(i.nextAction?'<br><span style="color:var(--muted)">Next action: '+esc(i.nextAction)+'</span>':"")+(i.nextFollowUpDate?'<br><span style="color:var(--muted)">Next follow-up: '+fmtDate(i.nextFollowUpDate)+'</span>':"")+'</div></div>').join("")+'</div>':'<div class="empty"><b>No interactions yet</b>Record a call, meeting or message to start the timeline.</div>')+'</div></div>'
+  +'<div class="card"><div class="card-h"><h3>Follow-Ups</h3><button class="btn btn-primary btn-sm" onclick="openFollowupModal(\''+id+'\',\''+c.companyId+'\')">'+IC.plus+' New</button></div><div class="card-b">'
+  +(fus.length?fus.map(f=>'<div style="padding:9px 0;border-bottom:1px solid #EEF2F7"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><b style="font-size:13px">'+fmtDate(f.date)+'</b>'+fuBadge(f)+'</div><div style="font-size:12.5px;color:var(--muted)">'+esc(f.method)+' · '+esc(f.purpose)+'</div>'+(f.resultNote?'<div style="font-size:12.5px;margin-top:3px">Result: '+esc(f.resultNote)+'</div>':"")+(f.status==="pending"?'<div style="margin-top:6px"><button class="btn btn-green btn-xs" onclick="completeFollowup(\''+f.id+'\')">Complete</button> <button class="btn btn-ghost btn-xs" onclick="rescheduleFollowup(\''+f.id+'\')">Reschedule</button></div>':"")+'</div>').join(""):'<div class="empty"><b>No follow-ups</b>'+(pend?"":" Schedule the next step.")+'</div>')+'</div></div></div>');
+}
+
+/* ============================================================
+   LEADS & MARKETING
+   ============================================================ */
+function renderLeads(){ const f=state.leadFilter;
+  let list=db.leads.filter(l=>f==="All"||l.status===f).sort((a,b)=>a.dateAdded<b.dateAdded?1:-1);
+  const tabs=["All",...LEAD_STATUSES].map(s=>{const n=s==="All"?db.leads.length:db.leads.filter(l=>l.status===s).length;return '<button class="tab'+(f===s?" active":"")+'" onclick="state.leadFilter=\''+s+'\';renderLeads()">'+s+'<span class="cnt">'+n+'</span></button>';}).join("");
+  page('<div class="page-head"><div><h1>Leads & Marketing</h1><p>'+db.leads.length+' leads · '+db.leads.filter(l=>l.status==="Converted").length+' converted</p></div><div class="head-actions"><button class="btn btn-primary" onclick="openLeadModal()">'+IC.plus+' Add Lead</button></div></div>'
+  +'<div class="tabs">'+tabs+'</div>'
+  +'<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Contact</th><th>Company</th><th>Service</th><th>Source</th><th>Status</th><th>Follow-Up</th><th>Assigned</th><th></th></tr></thead><tbody>'
+  +(list.length?list.map(l=>{const c=l.contactId?ctById(l.contactId):null;return '<tr><td><b>'+esc(l.contactName)+'</b><br><span style="font-size:12px;color:var(--muted)">'+esc(l.jobTitle||"")+'</span></td><td>'+esc(coName(l.companyId))+'</td><td>'+esc(l.service||"—")+'</td><td>'+esc(l.source||"—")+'</td><td><select class="fi" style="padding:4px 8px;font-size:12px;width:auto" onchange="setLeadStatus(\''+l.id+'\',this.value)">'+LEAD_STATUSES.map(s=>'<option'+(l.status===s?" selected":"")+'>'+s+'</option>').join("")+'</select></td><td>'+(l.followUpDate?fmtDate(l.followUpDate):"—")+'</td><td>'+esc(userName(l.assignedTo))+'</td><td style="white-space:nowrap"><button class="btn btn-ghost btn-xs" onclick="openLeadModal(\''+l.id+'\')">Edit</button> '+(l.status!=="Converted"?'<button class="btn btn-green btn-xs" onclick="convertLead(\''+l.id+'\')">Convert</button>':"")+(isAdmin()?' <button class="btn btn-red btn-xs" onclick="deleteLead(\''+l.id+'\')">✕</button>':"")+'</td></tr>';}).join(""):'<tr><td colspan="8"><div class="empty"><b>No leads in this status</b>Switch tabs or add a new lead.</div></td></tr>')
+  +'</tbody></table></div></div>');
+}
+function setLeadStatus(id,s){ const l=db.leads.find(x=>x.id===id); if(!l) return; l.status=s; saveDB(); renderLeads(); toast("Lead status updated to <b>"+esc(s)+"</b>","ok"); }
+function convertLead(id){ const l=db.leads.find(x=>x.id===id); if(!l) return; l.status="Converted"; l.followUpDate=""; saveDB(); renderLeads(); toast("Lead converted 🎉 Follow up with onboarding.","ok"); }
+function deleteLead(id){ confirmModal("Delete this lead permanently?",()=>{ db.leads=db.leads.filter(l=>l.id!==id); saveDB(); renderLeads(); toast("Lead deleted.","ok"); }); }
+
+/* ============================================================
+   FOLLOW-UPS
+   ============================================================ */
+function fuCounts(){ const t=today(); const p=db.followups.filter(f=>f.status==="pending"); return {today:p.filter(f=>f.date===t).length,overdue:p.filter(f=>f.date<t).length,upcoming:p.filter(f=>f.date>t).length,completed:db.followups.filter(f=>f.status!=="pending").length}; }
+function renderFollowups(){ const t=today(); const tab=state.fuTab; const cc=fuCounts();
+  let list=db.followups.filter(f=>{ if(tab==="completed") return f.status!=="pending"; if(f.status!=="pending") return false; if(tab==="today") return f.date===t; if(tab==="overdue") return f.date<t; return f.date>t; }).sort((a,b)=>tab==="upcoming"?(a.date>b.date?1:-1):(a.date<b.date?1:-1));
+  const tabs=[["today","Today",cc.today],["overdue","Overdue",cc.overdue],["upcoming","Upcoming",cc.upcoming],["completed","Completed",cc.completed]].map(x=>'<button class="tab'+(tab===x[0]?" active":"")+'" onclick="state.fuTab=\''+x[0]+'\';renderFollowups()">'+x[1]+'<span class="cnt">'+x[2]+'</span></button>').join("");
+  page('<div class="page-head"><div><h1>Follow-Ups</h1><p>'+cc.overdue+' overdue · '+cc.today+' due today</p></div><div class="head-actions"><button class="btn btn-primary" onclick="openFollowupModal()">'+IC.plus+' Schedule Follow-Up</button></div></div>'
+  +'<div class="tabs">'+tabs+'</div>'
+  +'<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Due</th><th>Contact</th><th>Company</th><th>Phone</th><th>Method</th><th>Purpose</th><th>Assigned</th><th>Status</th><th>Actions</th></tr></thead><tbody>'
+  +(list.length?list.map(f=>{const c=ctById(f.contactId);return '<tr><td>'+fmtDate(f.date)+'</td><td>'+(c?'<a href="#/contact/'+c.id+'"><b>'+esc(c.name)+'</b></a>':"—")+'</td><td>'+esc(coName(f.companyId))+'</td><td>'+esc(c&&c.phone?c.phone:"—")+'</td><td>'+esc(f.method)+'</td><td>'+esc(f.purpose)+(f.resultNote?'<br><span style="font-size:12px;color:var(--muted)">'+esc(f.resultNote)+'</span>':"")+'</td><td>'+esc(userName(f.assignedTo))+'</td><td>'+fuBadge(f)+'</td><td style="white-space:nowrap">'
+    +(f.status==="pending"?'<button class="btn btn-green btn-xs" onclick="completeFollowup(\''+f.id+'\')">Complete</button> <button class="btn btn-ghost btn-xs" onclick="rescheduleFollowup(\''+f.id+'\')">Reschedule</button> <button class="btn btn-ghost btn-xs" onclick="setFuStatus(\''+f.id+'\',\'no_response\')">No Response</button> <button class="btn btn-ghost btn-xs" onclick="setFuStatus(\''+f.id+'\',\'not_interested\')">Not Interested</button>'
+    :(f.status!=="converted"?'<button class="btn btn-green btn-xs" onclick="setFuStatus(\''+f.id+'\',\'converted\')">Convert</button>':""))
+    +'</td></tr>';}).join(""):'<tr><td colspan="9"><div class="empty"><b>Nothing here</b>'+(tab==="overdue"?" Great — no overdue follow-ups.":" Schedule a follow-up to keep momentum.")+'</div></td></tr>')
+  +'</tbody></table></div></div>');
+}
+function setFuStatus(id,s){ const f=db.followups.find(x=>x.id===id); if(!f) return; f.status=s; if(s!=="pending"&&!f.completedAt){ f.completedAt=dstr(new Date())+" "+nowHMS(); } saveDB(); route(); toast("Follow-up marked <b>"+esc(s.replace("_"," "))+"</b>","ok"); }
+
+/* ============================================================
+   INTERACTIONS
+   ============================================================ */
+function renderInteractions(){ const list=db.interactions.slice().sort((a,b)=>a.date<b.date?1:-1);
+  page('<div class="page-head"><div><h1>Interactions</h1><p>'+list.length+' interactions recorded across the team</p></div><div class="head-actions"><button class="btn btn-primary" onclick="openInteractionModal()">'+IC.plus+' Record Interaction</button></div></div>'
+  +'<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Date</th><th>Type</th><th>Contact</th><th>Company</th><th>Notes</th><th>Next Action</th><th>By</th></tr></thead><tbody>'
+  +(list.length?list.map(i=>'<tr><td>'+fmtDate(i.date)+'</td><td><span class="badge b-blue">'+esc(i.type)+'</span></td><td>'+(ctById(i.contactId)?'<a href="#/contact/'+i.contactId+'"><b>'+esc(ctById(i.contactId).name)+'</b></a>':"—")+'</td><td>'+esc(coName(i.companyId))+'</td><td style="max-width:280px">'+esc(i.notes)+'</td><td>'+esc(i.nextAction||"—")+'</td><td>'+esc(userName(i.employeeId))+'</td></tr>').join(""):'<tr><td colspan="7"><div class="empty"><b>No interactions yet</b>Record calls, meetings and messages to build client history.</div></td></tr>')
+  +'</tbody></table></div></div>');
+}
+
+/* ============================================================
+   STAFF ACTIVITY
+   ============================================================ */
+function renderActivity(){ const d=state.activityDate;
+  const rows=db.users.filter(u=>u.active).map(u=>{
+    const a=db.attendance.find(x=>x.userId===u.id&&x.date===d);
+    const coN=db.companies.filter(c=>c.dateAdded===d&&c.createdBy===u.id).length;
+    const ctN=db.contacts.filter(c=>c.dateAdded===d&&c.createdBy===u.id).length;
+    const ldN=db.leads.filter(l=>l.dateAdded===d&&(l.createdBy===u.id||l.assignedBy===u.id)).length;
+    const fuN=db.followups.filter(f=>f.status!=="pending"&&f.completedAt&&f.completedAt.slice(0,10)===d&&f.assignedTo===u.id).length;
+    const inN=db.interactions.filter(i=>i.date===d&&i.employeeId===u.id).length;
+    return {u,a,coN,ctN,ldN,fuN,inN};
+  });
+  page('<div class="page-head"><div><h1>Staff Activity</h1><p>Daily CRM usage — who is active and what they accomplished</p></div><div class="head-actions"><input type="date" class="fi" style="width:auto" value="'+d+'" onchange="state.activityDate=this.value;renderActivity()"></div></div>'
+  +'<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Staff</th><th>Role</th><th>Status</th><th>Login</th><th>Logout</th><th>Companies Added</th><th>Contacts Added</th><th>Leads Added</th><th>Follow-Ups Done</th><th>Interactions</th></tr></thead><tbody>'
+  +rows.map(r=>'<tr><td><b>'+esc(r.u.name)+'</b></td><td style="text-transform:capitalize">'+r.u.role+'</td><td>'+(r.a?(r.a.status==="Late"?'<span class="badge b-amber">Late</span>':'<span class="badge b-green">Present</span>'):'<span class="badge b-red">Not Logged In</span>')+'</td><td>'+(r.a?r.a.loginTime.slice(0,5):"—")+'</td><td>'+(r.a&&r.a.logoutTime?r.a.logoutTime.slice(0,5):"—")+'</td><td>'+r.coN+'</td><td>'+r.ctN+'</td><td>'+r.ldN+'</td><td>'+r.fuN+'</td><td>'+r.inN+'</td></tr>').join("")
+  +'</tbody></table></div></div>');
+}
+
+/* ============================================================
+   REPORTS
+   ============================================================ */
+function inRange(d){ return d>=state.repFrom&&d<=state.repTo; }
+function reportTable(title,note,headers,rows,csvName){ return '<div class="card"><div class="card-h"><h3>'+title+'</h3><button class="btn btn-ghost btn-sm" onclick="exportCSV(\''+csvName+'\')">⬇ Export CSV</button></div><div class="card-b">'
+  +(note?'<p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">'+note+'</p>':"")
+  +'<div class="tbl-wrap"><table class="tbl" id="tbl-'+csvName+'"><thead><tr>'+headers.map(h=>'<th>'+esc(h)+'</th>').join("")+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(x=>'<td>'+x+'</td>').join("")+'</tr>').join("")+'</tbody></table></div></div></div>'; }
+function renderReports(){ const from=state.repFrom,to=state.repTo;
+  const catRows=CATEGORIES.map(c=>{const n=db.companies.filter(x=>x.category===c).length;return [catBadge(c),String(n)];});
+  const indRows=Object.entries(db.contacts.reduce((m,c)=>{m[c.industry]=(m[c.industry]||0)+1;return m;},{})).sort((a,b)=>b[1]-a[1]).map(x=>[esc(x[0]),String(x[1])]);
+  const jobRows=Object.entries(db.contacts.reduce((m,c)=>{m[c.jobTitle]=(m[c.jobTitle]||0)+1;return m;},{})).sort((a,b)=>b[1]-a[1]).slice(0,15).map(x=>[esc(x[0]),String(x[1])]);
+  const leadRows=LEAD_STATUSES.map(s=>{const all=db.leads.filter(l=>l.status===s).length;const rng=db.leads.filter(l=>l.status===s&&inRange(l.dateAdded)).length;return [esc(s),String(all),String(rng)];});
+  const conv=db.leads.filter(l=>l.status==="Converted").length;
+  const fuDone=db.followups.filter(f=>f.status!=="pending"&&f.completedAt&&inRange(f.completedAt.slice(0,10)));
+  const fuRows=[["Completed",String(fuDone.length)],["No Response",String(db.followups.filter(f=>f.status==="no_response").length)],["Not Interested",String(db.followups.filter(f=>f.status==="not_interested").length)],["Converted",String(db.followups.filter(f=>f.status==="converted").length)]];
+  const srcRows=Object.entries(db.leads.reduce((m,l)=>{m[l.source]=(m[l.source]||0)+1;return m;},{})).sort((a,b)=>b[1]-a[1]).map(x=>[esc(x[0]),String(x[1])]);
+  const svcRows=Object.entries(db.companies.flatMap(c=>c.servicesInterested||[]).reduce((m,s)=>{m[s]=(m[s]||0)+1;return m;},{})).sort((a,b)=>b[1]-a[1]).map(x=>[esc(x[0]),String(x[1])]);
+  const actRows=db.users.filter(u=>u.active).map(u=>{const ins=db.interactions.filter(i=>i.employeeId===u.id&&inRange(i.date)).length;const fus=db.followups.filter(f=>f.assignedTo===u.id&&f.status!=="pending"&&f.completedAt&&inRange(f.completedAt.slice(0,10))).length;const lds=db.leads.filter(l=>(l.createdBy===u.id||l.assignedBy===u.id)&&inRange(l.dateAdded)).length;return [esc(u.name),String(lds),String(fus),String(ins)];});
+  page('<div class="page-head"><div><h1>Reports</h1><p>Filter by date range and export to CSV</p></div><div class="head-actions"><label class="fl" style="margin:0">From</label><input type="date" class="fi" style="width:auto" value="'+from+'" onchange="state.repFrom=this.value;renderReports()"><label class="fl" style="margin:0">To</label><input type="date" class="fi" style="width:auto" value="'+to+'" onchange="state.repTo=this.value;renderReports()"></div></div>'
+  +reportTable("Client Summary","Companies by category.","Category,Companies".split(","),catRows,"clients")
+  +reportTable("Contacts by Industry","All contacts grouped by industry.","Industry,Contacts".split(","),indRows,"industry")
+  +reportTable("Contacts by Job Title","Top 15 job titles in the database.","Job Title,Contacts".split(","),jobRows,"jobs")
+  +reportTable("Leads & Conversion","All-time and in selected range. Conversion rate: "+(db.leads.length?Math.round(conv/db.leads.length*100):0)+"%","Status,All Time,In Range".split(","),leadRows,"leads")
+  +reportTable("Follow-Up Activity","Completed follow-up outcomes.","Outcome,Count".split(","),fuRows,"followups")
+  +reportTable("Staff Activity (in range)","Leads added, follow-ups completed and interactions recorded per staff member.","Staff,Leads,Follow-Ups Done,Interactions".split(","),actRows,"staff")
+  +reportTable("Marketing Sources","Where leads come from.","Source,Leads".split(","),srcRows,"sources")
+  +reportTable("Services Requested","Services companies are interested in.","Service,Companies".split(","),svcRows,"services"));
+}
+function exportCSV(name){ const tbl=document.getElementById("tbl-"+name); if(!tbl) return; const rows=[...tbl.querySelectorAll("tr")].map(tr=>[...tr.children].map(td=>'"'+td.textContent.trim().replace(/"/g,'""')+'"').join(","));
+  const blob=new Blob([rows.join("\n")],{type:"text/csv"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="polar-hr-"+name+"-"+today()+".csv"; a.click(); toast("CSV exported.","ok"); }
+
+/* ============================================================
+   USERS & SETTINGS
+   ============================================================ */
+function renderUsers(){ if(!isAdmin()){ go("#/dashboard"); return; }
+  page('<div class="page-head"><div><h1>Users</h1><p>Staff accounts and roles</p></div><div class="head-actions"><button class="btn btn-primary" onclick="openUserModal()">'+IC.plus+' Add User</button></div></div>'
+  +'<div class="card"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>'
+  +db.users.map(u=>'<tr><td><b>'+esc(u.name)+'</b></td><td>'+esc(u.email)+'</td><td style="text-transform:capitalize">'+(u.role==="admin"?'<span class="badge b-amber">Admin</span>':u.role==="management"?'<span class="badge b-blue">Management</span>':'<span class="badge b-gray">Staff</span>')+'</td><td>'+(u.active?'<span class="badge b-green">Active</span>':'<span class="badge b-red">Inactive</span>')+'</td><td><button class="btn btn-ghost btn-xs" onclick="openUserModal(\''+u.id+'\')">Edit</button> <button class="btn btn-ghost btn-xs" onclick="toggleUser(\''+u.id+'\')">'+(u.active?"Deactivate":"Activate")+'</button></td></tr>').join("")
+  +'</tbody></table></div></div>');
+}
+function toggleUser(id){ const u=userById(id); if(!u) return; if(u.id===session.id){ toast("You cannot deactivate your own account.","err"); return; } u.active=!u.active; saveDB(); renderUsers(); toast("User "+(u.active?"activated":"deactivated")+".","ok"); }
+function renderSettings(){ if(!isAdmin()){ go("#/dashboard"); return; }
+  page('<div class="page-head"><div><h1>Settings</h1><p>Workspace configuration</p></div></div>'
+  +'<div class="card"><div class="card-h"><h3>Working Hours</h3></div><div class="card-b"><div class="form-grid"><div><label class="fl">Default working start time (logins after this are marked “Late”)</label><input type="time" class="fi" id="setStart" value="'+esc(db.settings.startTime)+'"></div><div><label class="fl">Company name</label><input class="fi" id="setCo" value="'+esc(db.settings.companyName)+'"></div></div><div style="margin-top:14px"><button class="btn btn-primary" onclick="saveSettings()">Save Settings</button></div></div></div>'
+  +'<div class="card"><div class="card-h"><h3>Data</h3></div><div class="card-b"><p style="font-size:13px;color:var(--muted);margin-bottom:12px">This MVP stores data in this browser (localStorage). Reset restores the demo dataset.</p><button class="btn btn-ghost" onclick="confirmModal(\'Reset ALL data to demo sample? This cannot be undone.\',resetDemo)">Reset Demo Data</button></div></div>');
+}
+function saveSettings(){ db.settings.startTime=document.getElementById("setStart").value||"08:00"; db.settings.companyName=document.getElementById("setCo").value; saveDB(); toast("Settings saved.","ok"); }
+function resetDemo(){ localStorage.removeItem(DBKEY); db=seedDB(); saveDB(); toast("Demo data restored.","ok"); route(); }
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+function openModal(html,wide){ const ov=document.getElementById("modalOverlay"); const m=document.getElementById("modal"); m.className=wide?"wide":""; m.innerHTML=html; ov.classList.remove("hidden"); }
+function closeModal(){ document.getElementById("modalOverlay").classList.add("hidden"); document.getElementById("modal").innerHTML=""; }
+function mHead(t){ return '<div class="m-h"><h3>'+t+'</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>'; }
+function confirmModal(msg,onYes){ window._confirmYes=onYes; openModal(mHead("Please Confirm")+'<div class="m-b"><p>'+esc(msg)+'</p></div><div class="m-f"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-red" onclick="closeModal();window._confirmYes()">Yes, Confirm</button></div>'); }
+function serviceCheckboxes(name,selected){ return '<div class="chips">'+SERVICES.map(s=>'<label style="display:inline-flex;align-items:center;gap:5px;background:#F1F5F9;border-radius:16px;padding:4px 11px;font-size:12px;cursor:pointer"><input type="checkbox" name="'+name+'" value="'+esc(s)+'"'+((selected||[]).includes(s)?" checked":"")+'> '+esc(s)+'</label>').join("")+'</div>'; }
+function checkedServices(name){ return [...document.querySelectorAll('input[name="'+name+'"]:checked')].map(i=>i.value); }
+function fv(id){ const e=document.getElementById(id); return e?e.value.trim():""; }
+
+/* ----- Company modal ----- */
+function openCompanyModal(id){ const c=id?coById(id):null;
+  openModal(mHead(c?"Edit Company":"Add Company")+'<div class="m-b"><div class="form-grid">'
+  +'<div class="full"><label class="fl">Company Name *</label><input class="fi" id="cName" value="'+esc(c?c.name:"")+'"></div>'
+  +'<div><label class="fl">Industry</label><select class="fi" id="cInd">'+selOpts(INDUSTRIES,c?c.industry:"","Select industry…")+'</select></div>'
+  +'<div><label class="fl">Location</label><input class="fi" id="cLoc" value="'+esc(c?c.location:"")+'" placeholder="e.g. Mombasa"></div>'
+  +'<div><label class="fl">Client Category</label><select class="fi" id="cCat">'+CATEGORIES.map(x=>'<option'+(c&&c.category===x?" selected":"")+'>'+x+'</option>').join("")+'</select></div>'
+  +'<div><label class="fl">Client Status</label><select class="fi" id="cStatus">'+["Active","Dormant","Lost"].map(x=>'<option'+(c&&c.status===x?" selected":"")+'>'+x+'</option>').join("")+'</select></div>'
+  +'<div><label class="fl">Main Phone</label><input class="fi" id="cPhone" value="'+esc(c?c.phone:"")+'"></div>'
+  +'<div><label class="fl">General Email</label><input class="fi" id="cEmail" value="'+esc(c?c.email:"")+'"></div>'
+  +'<div><label class="fl">Website</label><input class="fi" id="cWeb" value="'+esc(c?c.website:"")+'" placeholder="www.example.com"></div>'
+  +'<div><label class="fl">Lead Source</label><select class="fi" id="cSrc">'+selOpts(LEAD_SOURCES,c?c.leadSource:"","Select…")+'</select></div>'
+  +'<div class="full"><label class="fl">Physical Address</label><input class="fi" id="cAddr" value="'+esc(c?c.address:"")+'"></div>'
+  +'<div><label class="fl">Assigned Staff</label><select class="fi" id="cAsg">'+db.users.filter(u=>u.active).map(u=>'<option value="'+u.id+'"'+(c&&c.assignedTo===u.id?" selected":"")+'>'+esc(u.name)+'</option>').join("")+'</select></div>'
+  +'<div><label class="fl">Tags (comma separated)</label><input class="fi" id="cTags" value="'+esc(c?(c.tags||[]).join(", "):"")+'"></div>'
+  +'<div class="full"><label class="fl">Services Interested In</label>'+serviceCheckboxes("cSvcI",c?c.servicesInterested:[])+'</div>'
+  +'<div class="full"><label class="fl">Services Previously Provided</label>'+serviceCheckboxes("cSvcP",c?c.servicesProvided:[])+'</div>'
+  +'<div class="full"><label class="fl">Notes</label><textarea class="fi" id="cNotes">'+esc(c?c.notes:"")+'</textarea></div>'
+  +'</div></div><div class="m-f"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveCompany(\''+(id||"")+'\')">Save Company</button></div>',true);
+}
+function saveCompany(id){ const name=fv("cName"); if(!name){ toast("Company name is required.","err"); return; }
+  const data={name,industry:fv("cInd"),location:fv("cLoc"),category:fv("cCat"),status:fv("cStatus"),phone:fv("cPhone"),email:fv("cEmail"),website:fv("cWeb"),leadSource:fv("cSrc"),address:fv("cAddr"),assignedTo:fv("cAsg")||session.id,tags:fv("cTags").split(",").map(s=>s.trim()).filter(Boolean),servicesInterested:checkedServices("cSvcI"),servicesProvided:checkedServices("cSvcP"),notes:fv("cNotes")};
+  if(!id){ const dup=db.companies.filter(c=>c.name.toLowerCase()===name.toLowerCase()||(data.phone&&c.phone===data.phone)||(data.email&&c.email&&c.email.toLowerCase()===data.email.toLowerCase()));
+    if(dup.length){ dupModal("company",dup.map(d=>[d.id,d.name,d.phone||"",d.location||""]),()=>reallySaveCompany(null,data)); return; } }
+  reallySaveCompany(id,data);
+}
+function reallySaveCompany(id,data){ if(id){ Object.assign(coById(id),data); } else { db.companies.push(Object.assign({id:uid("co"),dateAdded:today(),lastInteraction:"",createdBy:session.id},data)); }
+  saveDB(); closeModal(); toast("Company saved.","ok"); route(); }
+
+/* ----- Contact modal ----- */
+function openContactModal(id,presetCo){ const c=id?ctById(id):null;
+  openModal(mHead(c?"Edit Contact":"Add Contact")+'<div class="m-b"><div class="form-grid">'
+  +'<div><label class="fl">Full Name *</label><input class="fi" id="tName" value="'+esc(c?c.name:"")+'"></div>'
+  +'<div><label class="fl">Job Title * (free text — e.g. Waiter, HR Manager)</label><input class="fi" id="tJob" list="jobTitles" value="'+esc(c?c.jobTitle:"")+'"><datalist id="jobTitles">'+[...new Set(db.contacts.map(x=>x.jobTitle))].map(j=>'<option value="'+esc(j)+'">').join("")+'</datalist></div>'
+  +'<div><label class="fl">Company *</label><select class="fi" id="tCo" onchange="autofillCompany(this.value)">'+selOpts(db.companies.map(x=>[x.id,x.name]),c?c.companyId:(presetCo||""),"Select company…")+'</select></div>'
+  +'<div><label class="fl">Department</label><input class="fi" id="tDept" value="'+esc(c?c.department:"")+'"></div>'
+  +'<div><label class="fl">Industry</label><input class="fi" id="tInd" value="'+esc(c?c.industry:"")+'"></div>'
+  +'<div><label class="fl">Location</label><input class="fi" id="tLoc" value="'+esc(c?c.location:"")+'"></div>'
+  +'<div><label class="fl">Phone</label><input class="fi" id="tPhone" value="'+esc(c?c.phone:"")+'"></div>'
+  +'<div><label class="fl">WhatsApp</label><input class="fi" id="tWa" value="'+esc(c?c.whatsapp:"")+'"></div>'
+  +'<div class="full"><label class="fl">Email</label><input class="fi" id="tEmail" value="'+esc(c?c.email:"")+'"></div>'
+  +'<div><label class="fl">Contact Type</label><select class="fi" id="tType">'+selOpts(CONTACT_TYPES,c?c.contactType:"","Select…")+'</select></div>'
+  +'<div><label class="fl">Client Category</label><select class="fi" id="tCat">'+CATEGORIES.map(x=>'<option'+(c&&c.category===x?" selected":"")+'>'+x+'</option>').join("")+'</select></div>'
+  +'<div><label class="fl">Relationship Status</label><select class="fi" id="tRel">'+selOpts(REL_STATUS,c?c.relationshipStatus:"","Select…")+'</select></div>'
+  +'<div><label class="fl">Preferred Communication</label><select class="fi" id="tPref">'+selOpts(PREF_METHODS,c?c.preferredMethod:"","Select…")+'</select></div>'
+  +'<div><label class="fl">Lead Source</label><select class="fi" id="tSrc">'+selOpts(LEAD_SOURCES,c?c.leadSource:"","Select…")+'</select></div>'
+  +'<div><label class="fl">Assigned Staff</label><select class="fi" id="tAsg">'+db.users.filter(u=>u.active).map(u=>'<option value="'+u.id+'"'+(c&&c.assignedTo===u.id?" selected":(u.id===session.id?" selected":""))+'>'+esc(u.name)+'</option>').join("")+'</select></div>'
+  +'<div><label class="fl">Decision Maker?</label><select class="fi" id="tDm"><option value="no"'+(c&&!c.decisionMaker?" selected":"")+'>No</option><option value="yes"'+(c&&c.decisionMaker?" selected":"")+'>Yes</option></select></div>'
+  +'<div><label class="fl">HR Contact?</label><select class="fi" id="tHr"><option value="no"'+(c&&!c.hrContact?" selected":"")+'>No</option><option value="yes"'+(c&&c.hrContact?" selected":"")+'>Yes</option></select></div>'
+  +'<div class="full"><label class="fl">Tags (comma separated)</label><input class="fi" id="tTags" value="'+esc(c?(c.tags||[]).join(", "):"")+'"></div>'
+  +'<div class="full"><label class="fl">Notes</label><textarea class="fi" id="tNotes">'+esc(c?c.notes:"")+'</textarea></div>'
+  +'</div></div><div class="m-f"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveContact(\''+(id||"")+'\')">Save Contact</button></div>',true);
+}
+function autofillCompany(coId){ const co=coById(coId); if(!co) return; if(!fv("tInd")) document.getElementById("tInd").value=co.industry||""; if(!fv("tLoc")) document.getElementById("tLoc").value=co.location||""; if(!fv("tCat")) document.getElementById("tCat").value=co.category||"PENDING"; if(!fv("tSrc")&&co.leadSource) document.getElementById("tSrc").value=co.leadSource; }
+function saveContact(id){ const name=fv("tName"),job=fv("tJob"),coId=fv("tCo"); if(!name||!job||!coId){ toast("Name, job title and company are required.","err"); return; }
+  const data={name,jobTitle:job,companyId:coId,department:fv("tDept"),industry:fv("tInd")||coById(coId).industry,location:fv("tLoc")||coById(coId).location,phone:fv("tPhone"),whatsapp:fv("tWa"),email:fv("tEmail"),contactType:fv("tType"),category:fv("tCat"),relationshipStatus:fv("tRel"),preferredMethod:fv("tPref"),leadSource:fv("tSrc"),assignedTo:fv("tAsg")||session.id,decisionMaker:fv("tDm")==="yes",hrContact:fv("tHr")==="yes",tags:fv("tTags").split(",").map(s=>s.trim()).filter(Boolean),notes:fv("tNotes")};
+  if(!id){ const dup=db.contacts.filter(x=>x.companyId===coId&&x.name.toLowerCase()===name.toLowerCase()||(data.phone&&x.phone===data.phone&&data.phone!=="")||(data.email&&x.email&&x.email.toLowerCase()===data.email.toLowerCase()));
+    if(dup.length){ dupModal("contact",dup.map(d=>[d.id,d.name,d.jobTitle||"",coName(d.companyId)]),()=>reallySaveContact(null,data)); return; } }
+  reallySaveContact(id,data);
+}
+function reallySaveContact(id,data){ if(id){ Object.assign(ctById(id),data); } else { db.contacts.push(Object.assign({id:uid("ct"),firstContacted:today(),lastContact:"",createdBy:session.id,dateAdded:today()},data)); }
+  saveDB(); closeModal(); toast("Contact saved.","ok"); route(); }
+function dupModal(kind,rows,proceed){ openModal(mHead("Possible Duplicate Found")+'<div class="m-b"><p style="margin-bottom:12px">A possible existing record was found. Please review before creating a duplicate:</p><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Name</th><th>Details</th><th></th></tr></thead><tbody>'
+  +rows.map(r=>'<tr><td><b>'+esc(r[1])+'</b></td><td>'+esc(r[2])+' · '+esc(r[3])+'</td><td><button class="btn btn-primary btn-xs" onclick="closeModal();go(\'#/'+kind+'/'+r[0]+'\')">Open Record</button></td></tr>').join("")+'</tbody></table></div></div>'
+  +'<div class="m-f"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="closeModal();window._dupProceed()">Create Anyway</button></div>');
+  window._dupProceed=proceed; }
+
+/* ----- Lead modal ----- */
+function openLeadModal(id){ const l=id?db.leads.find(x=>x.id===id):null;
+  openModal(mHead(l?"Edit Lead":"Add Lead")+'<div class="m-b"><div class="form-grid">'
+  +'<div><label class="fl">Contact Name *</label><input class="fi" id="lName" list="ctList" value="'+esc(l?l.contactName:"")+'" onchange="leadFromContact(this.value)"><datalist id="ctList">'+db.contacts.map(c=>'<option value="'+esc(c.name)+' — '+esc(coName(c.companyId))+'">').join("")+'</datalist></div>'
+  +'<div><label class="fl">Company *</label><select class="fi" id="lCo">'+selOpts(db.companies.map(x=>[x.id,x.name]),l?l.companyId:"","Select company…")+'</select></div>'
+  +'<div><label class="fl">Job Title</label><input class="fi" id="lJob" value="'+esc(l?l.jobTitle:"")+'"></div>'
+  +'<div><label class="fl">Service Interested In</label><select class="fi" id="lSvc">'+selOpts(SERVICES,l?l.service:"","Select…")+'</select></div>'
+  +'<div><label class="fl">Lead Source</label><select class="fi" id="lSrc">'+selOpts(LEAD_SOURCES,l?l.source:"","Select…")+'</select></div>'
+  +'<div><label class="fl">Marketing Channel</label><select class="fi" id="lCh">'+selOpts(CHANNELS,l?l.channel:"","Select…")+'</select></div>'
+  +'<div><label class="fl">Date Contacted</label><input type="date" class="fi" id="lDate" value="'+esc(l?l.dateContacted:today())+'"></div>'
+  +'<div><label class="fl">Follow-Up Date</label><input type="date" class="fi" id="lFu" value="'+esc(l?l.followUpDate:"")+'"></div>'
+  +'<div><label class="fl">Lead Status</label><select class="fi" id="lStatus">'+LEAD_STATUSES.map(s=>'<option'+(l&&l.status===s?" selected":(!l&&s==="New"?" selected":""))+'>'+s+'</option>').join("")+'</select></div>'
+  +'<div><label class="fl">Assigned Staff</label><select class="fi" id="lAsg">'+db.users.filter(u=>u.active).map(u=>'<option value="'+u.id+'"'+(l&&l.assignedTo===u.id?" selected":(u.id===session.id?" selected":""))+'>'+esc(u.name)+'</option>').join("")+'</select></div>'
+  +'<div class="full"><label class="fl">Notes</label><textarea class="fi" id="lNotes">'+esc(l?l.notes:"")+'</textarea></div>'
+  +'</div></div><div class="m-f"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveLead(\''+(id||"")+'\')">Save Lead</button></div>',true);
+}
+function leadFromContact(val){ const name=val.split(" — ")[0].trim(); const c=db.contacts.find(x=>x.name===name); if(!c) return; document.getElementById("lCo").value=c.companyId; if(!fv("lJob")) document.getElementById("lJob").value=c.jobTitle; }
+function saveLead(id){ const name=fv("lName"),coId=fv("lCo"); if(!name||!coId){ toast("Contact name and company are required.","err"); return; }
+  const co=coById(coId); const data={contactName:name,companyId:coId,jobTitle:fv("lJob"),industry:co.industry,location:co.location,service:fv("lSvc"),source:fv("lSrc"),channel:fv("lCh"),dateContacted:fv("lDate"),followUpDate:fv("lFu"),status:fv("lStatus")||"New",assignedTo:fv("lAsg")||session.id,notes:fv("lNotes")};
+  if(id){ Object.assign(db.leads.find(x=>x.id===id),data); } else { db.leads.push(Object.assign({id:uid("ld"),createdBy:session.id,assignedBy:session.id,dateAdded:today()},data)); }
+  saveDB(); closeModal(); toast("Lead saved.","ok"); route(); }
+
+/* ----- Follow-up modal ----- */
+function openFollowupModal(contactId,companyId){ const t=today();
+  openModal(mHead("Schedule Follow-Up")+'<div class="m-b"><div class="form-grid">'
+  +'<div class="full"><label class="fl">Contact *</label><select class="fi" id="fCt">'+selOpts(db.contacts.map(c=>[c.id,c.name+" — "+coName(c.companyId)]),contactId||"","Select contact…")+'</select></div>'
+  +'<div><label class="fl">Follow-Up Date *</label><input type="date" class="fi" id="fDate" value="'+t+'"></div>'
+  +'<div><label class="fl">Method</label><select class="fi" id="fMethod">'+FU_METHODS.map(m=>'<option>'+m+'</option>').join("")+'</select></div>'
+  +'<div class="full"><label class="fl">Purpose *</label><input class="fi" id="fPurpose" placeholder="e.g. Send quotation, confirm training dates"></div>'
+  +'<div><label class="fl">Assigned To</label><select class="fi" id="fAsg">'+db.users.filter(u=>u.active).map(u=>'<option value="'+u.id+'"'+(u.id===session.id?" selected":"")+'>'+esc(u.name)+'</option>').join("")+'</select></div>'
+  +'<div class="full"><label class="fl">Notes</label><textarea class="fi" id="fNotes"></textarea></div>'
+  +'</div></div><div class="m-f"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveFollowup()">Save Follow-Up</button></div>');
+}
+function saveFollowup(){ const ctId=fv("fCt"),date=fv("fDate"),purpose=fv("fPurpose"); if(!ctId||!date||!purpose){ toast("Contact, date and purpose are required.","err"); return; }
+  const c=ctById(ctId); db.followups.push({id:uid("fu"),contactId:ctId,companyId:c.companyId,assignedTo:fv("fAsg")||session.id,date,method:fv("fMethod"),purpose,status:"pending",notes:fv("fNotes"),createdBy:session.id,createdAt:today()+" "+nowHMS(),completedAt:"",resultNote:""});
+  saveDB(); closeModal(); toast("Follow-up scheduled for "+fmtDate(date)+".","ok"); route(); }
+
+/* ----- Complete / Reschedule ----- */
+function completeFollowup(id){ const f=db.followups.find(x=>x.id===id); if(!f) return; const c=ctById(f.contactId);
+  openModal(mHead("Complete Follow-Up")+'<div class="m-b"><p style="margin-bottom:12px"><b>'+esc(c?c.name:"")+'</b> — '+esc(f.purpose)+'</p><div class="form-grid">'
+  +'<div class="full"><label class="fl">Outcome / Note</label><textarea class="fi" id="cmpNote" placeholder="What happened?"></textarea></div>'
+  +'<div class="full"><label style="display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600"><input type="checkbox" id="cmpNext" checked onchange="document.getElementById(\'cmpNextRow\').style.display=this.checked?\'grid\':\'none\'"> Schedule the next follow-up immediately</label></div>'
+  +'<div class="full" id="cmpNextRow" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"><div><label class="fl">Next Date</label><input type="date" class="fi" id="cmpDate" value="'+dstr(addDays(1))+'"></div><div><label class="fl">Method</label><select class="fi" id="cmpMethod">'+FU_METHODS.map(m=>'<option>'+m+'</option>').join("")+'</select></div><div><label class="fl">Purpose</label><input class="fi" id="cmpPurpose" placeholder="Next step…"></div></div>'
+  +'</div></div><div class="m-f"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-green" onclick="doCompleteFollowup(\''+id+'\')">Mark Completed</button></div>');
+}
+function doCompleteFollowup(id){ const f=db.followups.find(x=>x.id===id); if(!f) return;
+  f.status="completed"; f.completedAt=today()+" "+nowHMS(); f.resultNote=fv("cmpNote");
+  const c=ctById(f.contactId); if(c){ c.lastContact=today(); } touchCompany(f.companyId);
+  if(document.getElementById("cmpNext").checked&&fv("cmpDate")){ db.followups.push({id:uid("fu"),contactId:f.contactId,companyId:f.companyId,assignedTo:f.assignedTo,date:fv("cmpDate"),method:fv("cmpMethod"),purpose:fv("cmpPurpose")||"Follow-up",status:"pending",notes:"",createdBy:session.id,createdAt:today()+" "+nowHMS(),completedAt:"",resultNote:""}); }
+  saveDB(); closeModal(); toast("Follow-up completed.","ok"); route(); }
+function rescheduleFollowup(id){ const f=db.followups.find(x=>x.id===id); if(!f) return;
+  openModal(mHead("Reschedule Follow-Up")+'<div class="m-b"><div class="form-grid"><div><label class="fl">New Date</label><input type="date" class="fi" id="rsDate" value="'+dstr(addDays(1))+'"></div><div><label class="fl">Method</label><select class="fi" id="rsMethod">'+FU_METHODS.map(m=>'<option'+(f.method===m?" selected":"")+'>'+m+'</option>').join("")+'</select></div></div></div><div class="m-f"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="doReschedule(\''+id+'\')">Save</button></div>');
+}
+function doReschedule(id){ const f=db.followups.find(x=>x.id===id); if(!f) return; f.date=fv("rsDate")||f.date; f.method=fv("rsMethod")||f.method; saveDB(); closeModal(); toast("Follow-up rescheduled to "+fmtDate(f.date)+".","ok"); route(); }
+
+/* ----- Interaction modal ----- */
+function openInteractionModal(contactId,companyId){
+  openModal(mHead("Record Interaction")+'<div class="m-b"><div class="form-grid">'
+  +'<div class="full"><label class="fl">Contact *</label><select class="fi" id="iCt">'+selOpts(db.contacts.map(c=>[c.id,c.name+" — "+coName(c.companyId)]),contactId||"","Select contact…")+'</select></div>'
+  +'<div><label class="fl">Date</label><input type="date" class="fi" id="iDate" value="'+today()+'"></div>'
+  +'<div><label class="fl">Interaction Type</label><select class="fi" id="iType">'+INTERACTION_TYPES.map(m=>'<option>'+m+'</option>').join("")+'</select></div>'
+  +'<div class="full"><label class="fl">Notes *</label><textarea class="fi" id="iNotes" placeholder="What was discussed?"></textarea></div>'
+  +'<div><label class="fl">Next Action</label><input class="fi" id="iNext" placeholder="e.g. Send quotation"></div>'
+  +'<div><label class="fl">Next Follow-Up Date (optional — creates a follow-up)</label><input type="date" class="fi" id="iFu"></div>'
+  +'</div></div><div class="m-f"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveInteraction()">Save Interaction</button></div>');
+}
+function saveInteraction(){ const ctId=fv("iCt"),notes=fv("iNotes"); if(!ctId||!notes){ toast("Contact and notes are required.","err"); return; }
+  const c=ctById(ctId); const d=fv("iDate")||today();
+  db.interactions.push({id:uid("in"),contactId:ctId,companyId:c.companyId,employeeId:session.id,date:d,type:fv("iType"),notes,nextAction:fv("iNext"),nextFollowUpDate:fv("iFu"),createdAt:today()+" "+nowHMS()});
+  c.lastContact=d; touchCompany(c.companyId,d);
+  if(fv("iFu")){ db.followups.push({id:uid("fu"),contactId:ctId,companyId:c.companyId,assignedTo:c.assignedTo||session.id,date:fv("iFu"),method:fv("iType")&&FU_METHODS.includes(fv("iType"))?fv("iType"):"Phone Call",purpose:fv("iNext")||"Follow-up",status:"pending",notes:"",createdBy:session.id,createdAt:today()+" "+nowHMS(),completedAt:"",resultNote:""}); }
+  saveDB(); closeModal(); toast("Interaction recorded.","ok"); route(); }
+
+/* ----- User modal ----- */
+function openUserModal(id){ const u=id?userById(id):null;
+  openModal(mHead(u?"Edit User":"Add User")+'<div class="m-b"><div class="form-grid">'
+  +'<div><label class="fl">Full Name *</label><input class="fi" id="uName" value="'+esc(u?u.name:"")+'"></div>'
+  +'<div><label class="fl">Email *</label><input class="fi" id="uEmail" value="'+esc(u?u.email:"")+'"></div>'
+  +'<div><label class="fl">Password *</label><input class="fi" id="uPass" value="'+esc(u?u.pass:"")+'"></div>'
+  +'<div><label class="fl">Role</label><select class="fi" id="uRole">'+["admin","management","staff"].map(r=>'<option'+(u&&u.role===r?" selected":"")+'>'+r+'</option>').join("")+'</select></div>'
+  +'</div></div><div class="m-f"><button class="btn btn-ghost" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveUser(\''+(id||"")+'\')">Save User</button></div>');
+}
+function saveUser(id){ const name=fv("uName"),email=fv("uEmail"),pass=fv("uPass"); if(!name||!email||!pass){ toast("All fields are required.","err"); return; }
+  if(db.users.some(u=>u.email.toLowerCase()===email.toLowerCase()&&u.id!==id)){ toast("That email is already in use.","err"); return; }
+  if(id){ Object.assign(userById(id),{name,email,pass,role:fv("uRole")}); } else { db.users.push({id:uid("u"),name,email,pass,role:fv("uRole"),active:true}); }
+  saveDB(); closeModal(); toast("User saved.","ok"); renderUsers(); }
+
+/* ---------- INIT ---------- */
+loadDB();
+restoreSession();
+</script>
+
+
+</body></html>
